@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 | Yan Linyi的个人主页 - No Game, No Life</title>
+    <!-- 引入主题切换按钮样式 -->
+    <link rel="stylesheet" href="css/theme-toggle.css">
+    <style>
+        :root {
+            --primary: #2F80ED;
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        /* 明确定义亮色/暗色模式的类 */
+        .light-mode {
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        .dark-mode {
+            --background: #0B0C10;
+            --text: #FFFFFF;
+        }
+        
+        body {
+            font-family: 'Inter', 'Source Han Sans', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode header {
+            background-color: rgba(11, 12, 16, 0.8);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        /* Mobile menu styles */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background-color: var(--background);
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem 0;
+                gap: 1rem;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.3s ease;
+                z-index: 9;
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .nav-links a {
+                font-size: 1rem;
+                padding: 0.5rem 0;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        main {
+            padding-top: 4rem;
+            min-height: calc(100vh - 8rem);
+        }
+        
+        section {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (max-width: 768px) {
+            section {
+                padding: 3rem 0;
+            }
+        }
+        
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile {
+                margin-bottom: 3rem;
+            }
+        }
+        
+        .profile-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 2rem;
+            border: 4px solid var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .profile-image {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        .profile-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 2rem;
+            }
+        }
+        
+        .profile-title {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dark-mode .profile-title {
+            color: #AAA;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-title {
+                font-size: 1.125rem;
+            }
+        }
+        
+        .profile-bio {
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .dark-mode .social-link {
+            background-color: #1A1B23;
+            color: #AAA;
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title h2 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        .section-title p {
+            font-size: 1.125rem;
+            color: #666;
+            max-width: 36rem;
+            margin: 0 auto;
+        }
+        
+        .dark-mode .section-title p {
+            color: #AAA;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title p {
+                font-size: 1rem;
+            }
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .skills-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+                margin-bottom: 3rem;
+            }
+        }
+        
+        .skill-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .dark-mode .skill-card {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .skill-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .skill-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .skill-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skill-level {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+        
+        .skill-dot {
+            width: 0.5rem;
+            height: 0.5rem;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+        
+        .dark-mode .skill-dot {
+            background-color: #444;
+        }
+        
+        .skill-dot.active {
+            background-color: var(--primary);
+        }
+        
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background-color: #eee;
+            transform: translateX(-50%);
+        }
+        
+        .dark-mode .timeline::before {
+            background-color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 2rem;
+            }
+        }
+        
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-item {
+                flex-direction: column;
+                margin-bottom: 3rem;
+                padding-left: 3rem;
+            }
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-date {
+            width: 45%;
+            text-align: right;
+            padding-right: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-date {
+                width: 100%;
+                text-align: left;
+                padding-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        .timeline-content {
+            width: 45%;
+            padding-left: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-content {
+                width: 100%;
+                padding-left: 0;
+            }
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: var(--primary);
+            transform: translateX(-50%);
+        }
+        
+        @media (max-width: 768px) {
+            .timeline-dot {
+                left: 2rem;
+            }
+        }
+        
+        .timeline-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timeline-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+        
+        .dark-mode .timeline-subtitle {
+            color: #AAA;
+        }
+        
+        .timeline-text {
+            font-size: 0.875rem;
+        }
+        
+        footer {
+            background-color: #f5f5f5;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+            position: relative;
+            z-index: 1;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .dark-mode footer {
+            background-color: #0B0C10;
+            border-color: #333;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+            padding: 0.25rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .dark-mode .footer-links a {
+            color: #AAA;
+        }
+        
+        .copyright {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .dark-mode .copyright {
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Yan Linyi的个人主页</a>
+                <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+                <div class="nav-links">
+                    <a href="index.html">首页</a>
+                    <a href="playbook.html">方法论</a>
+                    <a href="writing.html">文章</a>
+                    <a href="about.html" class="active">关于我</a>
+                    <a href="cv.html">简历下载</a>
+                    <a href="contact.html">联系我</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section>
+            <div class="container">
+                <div class="profile">
+                    <img src="https://via.placeholder.com/180" alt="Linyi Yan" class="profile-image">
+                    <h1 class="profile-name">Yan Linyi</h1>
+                    <div class="profile-title">商业 × AI × 个人展示</div>
+                    <div class="profile-bio">
+                        <p>资深AI产品与运营专家，擅长将前沿技术与商业需求结合，打造高效智能解决方案。在RAG系统、Prompt工程、AI评测等领域拥有丰富实践经验，致力于通过AI技术为企业创造实际价值。</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="mailto:contact@example.com" class="social-link" aria-label="Email">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                <rect x="2" y="9" width="4" height="12"></rect>
+                                <circle cx="4" cy="4" r="2"></circle>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="知乎">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="微信">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="section-title">
+                    <h2>技能与专长</h2>
+                    <p>多年积累的核心能力与专业技能</p>
+                </div>
+                
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <div class="skill-icon">🤖</div>
+                        <div class="skill-name">RAG系统设计</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card">
+                        <div class="skill-icon">✏️</div>
+                        <div class="skill-name">Prompt工程</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card">
+                        <div class="skill-icon">📊</div>
+                        <div class="skill-name">AI评测</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card">
+                        <div class="skill-icon">📈</div>
+                        <div class="skill-name">运营看板</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card">
+                        <div class="skill-icon">⚖️</div>
+                        <div class="skill-name">合规管理</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot"></div>
+                            <div class="skill-dot"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card">
+                        <div class="skill-icon">💼</div>
+                        <div class="skill-name">商业策略</div>
+                        <div class="skill-level">
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot active"></div>
+                            <div class="skill-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title">
+                    <h2>教育与经历</h2>
+                    <p>学习与职业发展历程</p>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2023 - 至今</div>
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">高级AI产品经理</div>
+                            <div class="timeline-subtitle">某知名科技公司</div>
+                            <div class="timeline-text">负责大型RAG系统的产品设计与优化，带领团队从0到1构建企业级智能问答平台，显著提升了用户体验与业务效率。</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2020 - 2023</div>
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">AI解决方案专家</div>
+                            <div class="timeline-subtitle">某金融科技公司</div>
+                            <div class="timeline-text">设计并实施金融领域的AI应用解决方案，包括智能客服、风控模型与合规系统，为企业降本增效超过30%。</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2018 - 2020</div>
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">数据分析师</div>
+                            <div class="timeline-subtitle">某互联网公司</div>
+                            <div class="timeline-text">负责用户行为分析与产品优化，建立数据驱动的决策流程，推动关键指标提升20%。</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2015 - 2018</div>
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">硕士学位 - 计算机科学</div>
+                            <div class="timeline-subtitle">某知名大学</div>
+                            <div class="timeline-text">研究方向：人工智能与机器学习。论文主题：《基于深度学习的自然语言处理在金融领域的应用》</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="logo">Yan Linyi的个人主页</div>
+                    <p style="margin-top: 0.5rem;">No Game, No Life</p>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="mailto:contact@example.com">Email</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">知乎</a>
+                    <a href="#">微信</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <p class="copyright">&copy; 2025 Linyi Yan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 引入时间工具类和主题切换器 -->
+    <script src="js/time-utility.js"></script>
+    <script src="js/theme-switcher.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 点击导航链接后关闭菜单
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 点击页面其他区域关闭菜单
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && 
+                    !event.target.closest('.nav-links') && 
+                    !event.target.closest('.menu-toggle') && 
+                    navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

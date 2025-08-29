@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章 | Yan Linyi的个人主页 - No Game, No Life</title>
+    <!-- 引入主题切换按钮样式 -->
+    <link rel="stylesheet" href="css/theme-toggle.css">
+    <style>
+        :root {
+            --primary: #2F80ED;
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        /* 明确定义亮色/暗色模式的类 */
+        .light-mode {
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        .dark-mode {
+            --background: #0B0C10;
+            --text: #FFFFFF;
+        }
+        
+        body {
+            font-family: 'Inter', 'Source Han Sans', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode header {
+            background-color: rgba(11, 12, 16, 0.8);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        /* Mobile menu styles */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background-color: var(--background);
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem 0;
+                gap: 1rem;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.3s ease;
+                z-index: 9;
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .nav-links a {
+                font-size: 1rem;
+                padding: 0.5rem 0;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        main {
+            padding-top: 4rem;
+            min-height: calc(100vh - 8rem);
+        }
+        
+        section {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (max-width: 768px) {
+            section {
+                padding: 3rem 0;
+            }
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title h2 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        .section-title p {
+            font-size: 1.125rem;
+            color: #666;
+            max-width: 36rem;
+            margin: 0 auto;
+        }
+        
+        .dark-mode .section-title p {
+            color: #AAA;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title p {
+                font-size: 1rem;
+            }
+        }
+        
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background-color: #f5f5f5;
+            color: #666;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .dark-mode .tag {
+            background-color: #1A1B23;
+            color: #AAA;
+        }
+        
+        .tag:hover, .tag.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .cards-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .dark-mode .card {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-date {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .dark-mode .card-date {
+            color: #AAA;
+        }
+        
+        .card-content {
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            background-color: rgba(47, 128, 237, 0.1);
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            gap: 0.5rem;
+        }
+        
+        .button-ghost {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .button-ghost:hover {
+            background-color: rgba(47, 128, 237, 0.1);
+        }
+        
+        .featured-card {
+            position: relative;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+        }
+        
+        .featured-card::before {
+            content: "最新";
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transform: translateX(30%) translateY(-10%) rotate(45deg);
+            transform-origin: top right;
+        }
+        
+        footer {
+            background-color: #f5f5f5;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+            position: relative;
+            z-index: 1;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .dark-mode footer {
+            background-color: #0B0C10;
+            border-color: #333;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+            padding: 0.25rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .dark-mode .footer-links a {
+            color: #AAA;
+        }
+        
+        .copyright {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .dark-mode .copyright {
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Yan Linyi的个人主页</a>
+                <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+                <div class="nav-links">
+                    <a href="index.html">首页</a>
+                    <a href="playbook.html">方法论</a>
+                    <a href="writing.html" class="active">文章</a>
+                    <a href="about.html">关于我</a>
+                    <a href="cv.html">简历下载</a>
+                    <a href="contact.html">联系我</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section>
+            <div class="container">
+                <div class="section-title">
+                    <h2>文章与笔记</h2>
+                    <p>分享我在AI、商业策略和技术领域的思考与实践</p>
+                </div>
+                
+                <div class="tags-container">
+                    <div class="tag active">全部</div>
+                    <div class="tag">RAG</div>
+                    <div class="tag">Prompt</div>
+                    <div class="tag">评测</div>
+                    <div class="tag">运营</div>
+                    <div class="tag">合规</div>
+                    <div class="tag">金融</div>
+                </div>
+                
+                <div class="cards-container">
+                    <div class="card featured-card">
+                        <h3 class="card-title">人机协作宣言</h3>
+                        <div class="card-date">2025年8月20日</div>
+                        <p class="card-content">本主页与之后的所有创作，均采用 HITL（Human-in-the-Loop，人机协作） 完成：AI 负责信息聚合、结构化与规模化生成，人 负责问题设定、价值判断、合规把关与最终背书。</p>
+                        <div class="card-tags">
+                            <span class="card-tag">人机协作</span>
+                            <span class="card-tag">HITL</span>
+                            <span class="card-tag">宣言</span>
+                            <span class="card-tag">AI</span>
+                        </div>
+                        <a href="https://pcnw9k16moee.feishu.cn/docx/NlVyd0OCNoTgo9xVYhschOgdnZg" target="_blank" class="button button-ghost">
+                            在飞书中阅读
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <line x1="10" y1="14" x2="21" y2="3"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="logo">Yan Linyi的个人主页</div>
+                    <p style="margin-top: 0.5rem;">No Game, No Life</p>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="mailto:contact@example.com">Email</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">知乎</a>
+                    <a href="#">微信</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <p class="copyright">&copy; 2025 Linyi Yan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 引入时间工具类和主题切换器 -->
+    <script src="js/time-utility.js"></script>
+    <script src="js/theme-switcher.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 点击导航链接后关闭菜单
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 点击页面其他区域关闭菜单
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && 
+                    !event.target.closest('.nav-links') && 
+                    !event.target.closest('.menu-toggle') && 
+                    navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                }
+            });
+            
+            // 标签筛选功能
+            const tags = document.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    // 移除所有标签的active类
+                    tags.forEach(t => t.classList.remove('active'));
+                    // 给当前点击的标签添加active类
+                    this.classList.add('active');
+                    
+                    // 这里可以添加实际的筛选逻辑
+                    // 例如根据标签筛选文章卡片
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

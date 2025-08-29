@@ -1,0 +1,23 @@
+[
+  {
+    "id": "intelligent-customer-service",
+    "title": "智能客服从0→1",
+    "description": "从需求分析到系统上线，构建完整的企业级智能客服系统，实现自助率提升45%，人力成本降低40%。",
+    "icon": "headset",
+    "tags": ["LLM", "RAG", "系统架构"]
+  },
+  {
+    "id": "process-automation",
+    "title": "流程自动化与数据治理",
+    "description": "设计并实施企业级数据治理框架，结合AI技术实现关键业务流程自动化，提升效率30%，数据准确率达99.5%。",
+    "icon": "workflow",
+    "tags": ["自动化", "数据治理", "效率提升"]
+  },
+  {
+    "id": "rag-methodology",
+    "title": "RAG应用方法论",
+    "description": "开发RAG系统最佳实践框架，包括向量数据库选型、Embedding策略、检索优化等关键环节，提升相关性40%。",
+    "icon": "search",
+    "tags": ["RAG", "向量检索", "知识库"]
+  }
+] 

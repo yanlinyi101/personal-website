@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方法论 | Yan Linyi的个人主页 - No Game, No Life</title>
+    <!-- 引入主题切换按钮样式 -->
+    <link rel="stylesheet" href="css/theme-toggle.css">
+    <style>
+        :root {
+            --primary: #2F80ED;
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        /* 明确定义亮色/暗色模式的类 */
+        .light-mode {
+            --background: #FFFFFF;
+            --text: #333333;
+        }
+        
+        .dark-mode {
+            --background: #0B0C10;
+            --text: #FFFFFF;
+        }
+        
+        body {
+            font-family: 'Inter', 'Source Han Sans', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+        
+        .dark-mode header {
+            background-color: rgba(11, 12, 16, 0.8);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+        
+        .logo {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+        
+        /* Mobile menu styles */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 4rem;
+                left: 0;
+                right: 0;
+                background-color: var(--background);
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem 0;
+                gap: 1rem;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.3s ease;
+                z-index: 9;
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .nav-links a {
+                font-size: 1rem;
+                padding: 0.5rem 0;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        main {
+            padding-top: 4rem;
+            min-height: calc(100vh - 8rem);
+        }
+        
+        section {
+            padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (max-width: 768px) {
+            section {
+                padding: 3rem 0;
+            }
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title h2 {
+                font-size: 1.75rem;
+            }
+        }
+        
+        .section-title p {
+            font-size: 1.125rem;
+            color: #666;
+            max-width: 36rem;
+            margin: 0 auto;
+        }
+        
+        .dark-mode .section-title p {
+            color: #AAA;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title p {
+                font-size: 1rem;
+            }
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .module-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+        
+        .module-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .dark-mode .module-card {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .module-card:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .module-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .module-card-content {
+            margin-bottom: 1.5rem;
+        }
+        
+        .module-card-points {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        
+        .module-card-points li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .module-card-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .button-ghost {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .button-ghost:hover {
+            background-color: rgba(47, 128, 237, 0.1);
+        }
+        
+        .capabilities {
+            margin-top: 4rem;
+        }
+        
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .capabilities-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        .capability-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .dark-mode .capability-card {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .capability-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .capability-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .capability-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(47, 128, 237, 0.1);
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .capability-card h4 {
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+        }
+        
+        .capability-card p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .dark-mode .capability-card p {
+            color: #AAA;
+        }
+        
+        footer {
+            background-color: #f5f5f5;
+            padding: 2rem 0;
+            border-top: 1px solid #eee;
+            position: relative;
+            z-index: 1;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        .dark-mode footer {
+            background-color: #0B0C10;
+            border-color: #333;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+            padding: 0.25rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .dark-mode .footer-links a {
+            color: #AAA;
+        }
+        
+        .copyright {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .dark-mode .copyright {
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">Yan Linyi的个人主页</a>
+                <button class="menu-toggle" aria-label="Toggle menu">☰</button>
+                <div class="nav-links">
+                    <a href="index.html">首页</a>
+                    <a href="playbook.html" class="active">方法论</a>
+                    <a href="writing.html">文章</a>
+                    <a href="about.html">关于我</a>
+                    <a href="cv.html">简历下载</a>
+                    <a href="contact.html">联系我</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section>
+            <div class="container">
+                <div class="section-title">
+                    <h1>方法论</h1>
+                    <p>AI领域的方法论与最佳实践，帮助企业高效落地AI应用</p>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">智能客服从0→1</h3>
+                        <p class="card-content">构建完整的企业级智能客服系统，实现自助率提升与人力成本降低</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">流程自动化与数据治理</h3>
+                        <p class="card-content">设计并实施企业级数据治理框架，结合AI技术实现关键业务流程自动化</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">RAG / Prompt / 评测方法论</h3>
+                        <p class="card-content">开发RAG系统最佳实践框架，包括向量数据库选型、Embedding策略、检索优化</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">指标闭环与协作落地</h3>
+                        <p class="card-content">构建AI运营指标体系，实现从监控到决策的闭环，推动跨团队协作与业务落地</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="divider">
+            <div class="container">
+                <div class="section-title">
+                    <h2>六大模块</h2>
+                    <p>覆盖AI应用全生命周期的方法论体系</p>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">Prompt工程</h3>
+                        <p class="card-content">设计高效Prompt的方法论与最佳实践，帮助优化AI模型输出质量与相关性。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">RAG应用</h3>
+                        <p class="card-content">检索增强生成(RAG)系统的设计原则与实践经验，提升AI系统的知识准确性与时效性。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">评测方法论</h3>
+                        <p class="card-content">构建全面的AI系统评测框架，从技术、业务、用户体验多维度量化AI系统的表现。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">运营看板</h3>
+                        <p class="card-content">设计实用的AI运营看板，通过关键指标监控与可视化，实现AI系统的高效运营与持续优化。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">合规框架</h3>
+                        <p class="card-content">AI应用的合规性与安全性保障体系，确保系统符合法律法规与伦理标准。</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">金融应用</h3>
+                        <p class="card-content">AI在金融领域的应用框架与最佳实践，平衡创新与合规，提升金融服务效率与体验。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <div class="logo">Yan Linyi的个人主页</div>
+                    <p style="margin-top: 0.5rem;">No Game, No Life</p>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="mailto:contact@example.com">Email</a>
+                    <a href="#">LinkedIn</a>
+                    <a href="#">知乎</a>
+                    <a href="#">微信</a>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem; text-align: center;">
+                <p class="copyright">&copy; 2025 Linyi Yan. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 点击导航链接后关闭菜单
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 点击页面其他区域关闭菜单
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && 
+                    !event.target.closest('.nav-links') && 
+                    !event.target.closest('.menu-toggle') && 
+                    navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    
+    <!-- 引入时间工具类和主题切换器 -->
+    <script src="js/time-utility.js"></script>
+    <script src="js/theme-switcher.js"></script>
+</body>
+</html> 

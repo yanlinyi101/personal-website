@@ -1,0 +1,21 @@
+{
+  "name": "Linyi Yan - 商业 × AI × 个人展示",
+  "short_name": "Linyi Yan",
+  "description": "专注于商业策略与人工智能的交叉领域，擅长智能客服系统搭建、RAG应用开发与Prompt工程",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B0C10",
+  "theme_color": "#2F80ED",
+  "icons": [
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "32x32",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+} 

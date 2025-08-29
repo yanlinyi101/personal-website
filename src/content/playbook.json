@@ -1,0 +1,80 @@
+[
+  {
+    "id": "prompt",
+    "title": "Prompt工程",
+    "summary": "设计高效Prompt的方法论与最佳实践，帮助优化AI模型输出质量与相关性。",
+    "points": [
+      "角色设定与约束明确化",
+      "任务分解与结构化输入",
+      "示例驱动与少样本学习",
+      "迭代优化与A/B测试",
+      "领域适配与专业性强化"
+    ],
+    "codeExample": "// Prompt模板示例\nconst financialAdvisorPrompt = `\n你是一位金融顾问AI助手，请注意：\n1. 不提供具体投资建议或预测\n2. 清晰标示信息为教育性质\n3. 提醒用户咨询专业人士\n4. 避免使用绝对化语言\n\n用户问题：{{userQuestion}}\n`;"
+  },
+  {
+    "id": "rag",
+    "title": "RAG应用",
+    "summary": "检索增强生成(RAG)系统的设计原则与实践经验，提升AI系统的知识准确性与时效性。",
+    "points": [
+      "向量数据库选型与优化",
+      "Embedding模型选择策略",
+      "文档分块与预处理技术",
+      "混合检索与重排序机制",
+      "上下文压缩与相关性提升"
+    ],
+    "codeExample": "// RAG系统核心流程示例\nasync function generateRAGResponse(query) {\n  // 1. 生成查询向量\n  const queryEmbedding = await embedQuery(query);\n  \n  // 2. 向量检索相关文档\n  const relevantDocs = await vectorDB.similaritySearch(queryEmbedding, 5);\n  \n  // 3. 重排序提升相关性\n  const rerankedDocs = await reranker.rerank(query, relevantDocs);\n  \n  // 4. 构建上下文\n  const context = buildContext(rerankedDocs.slice(0, 3));\n  \n  // 5. 生成回复\n  return await llm.complete({\n    prompt: `基于以下信息回答问题：\\n\\n${context}\\n\\n问题：${query}\\n回答：`\n  });\n}"
+  },
+  {
+    "id": "evaluation",
+    "title": "评测方法论",
+    "summary": "构建全面的AI系统评测框架，从技术、业务、用户体验多维度量化AI系统的表现。",
+    "points": [
+      "多维度指标体系设计",
+      "自动化评测流水线构建",
+      "人机协作评测框架",
+      "业务价值量化方法",
+      "持续优化反馈循环"
+    ],
+    "codeExample": "// AI评测框架示例\nconst evaluationResults = {\n  technical: {\n    accuracy: 0.92,\n    latency: {\n      p50: 120, // ms\n      p95: 350, // ms\n      p99: 780  // ms\n    },\n    robustness: 0.85\n  },\n  business: {\n    conversionLift: 0.18,\n    costReduction: 0.35,\n    timeEfficiency: 0.42\n  },\n  userExperience: {\n    satisfactionScore: 4.3,\n    netPromoterScore: 45,\n    retentionRate: 0.78\n  },\n  compliance: {\n    biasScore: 0.05,\n    privacyCompliance: 1.0,\n    safetyBoundaries: 0.98\n  }\n};"
+  },
+  {
+    "id": "operations",
+    "title": "运营看板",
+    "summary": "设计实用的AI运营看板，通过关键指标监控与可视化，实现AI系统的高效运营与持续优化。",
+    "points": [
+      "核心指标分类与设计",
+      "层次化信息架构",
+      "可操作性告警机制",
+      "受众适配与视图定制",
+      "运营闭环与持续优化"
+    ],
+    "codeExample": "// 运营看板数据结构示例\nconst dashboardData = {\n  systemHealth: {\n    availability: 0.9998,\n    responseTime: {\n      avg: 145,\n      p95: 320,\n      p99: 750\n    },\n    errorRate: 0.002,\n    resourceUtilization: {\n      cpu: 0.65,\n      memory: 0.72,\n      gpu: 0.88\n    }\n  },\n  businessMetrics: {\n    dailyActiveUsers: 12580,\n    requestVolume: 145200,\n    successRate: 0.978,\n    conversionContribution: 0.22\n  },\n  userBehavior: {\n    sessionDuration: 320,\n    featureUsage: {\n      search: 0.45,\n      recommendations: 0.32,\n      contentCreation: 0.18\n    },\n    satisfactionTrend: [4.2, 4.3, 4.4, 4.5, 4.3, 4.6]\n  }\n};"
+  },
+  {
+    "id": "compliance",
+    "title": "合规框架",
+    "summary": "AI应用的合规性与安全性保障体系，确保系统符合法律法规与伦理标准。",
+    "points": [
+      "数据隐私与安全保障",
+      "偏见检测与公平性评估",
+      "可解释性与透明度设计",
+      "内容安全与审核机制",
+      "合规文档与审计支持"
+    ],
+    "codeExample": "// AI系统合规检查示例\nasync function complianceCheck(userInput, systemOutput) {\n  const checks = {\n    pii: await detectPII(systemOutput),\n    sensitiveContent: await contentSafetyCheck(systemOutput),\n    bias: await biasDetection(systemOutput),\n    factuality: await factCheck(systemOutput),\n    attribution: await sourceAttribution(systemOutput)\n  };\n  \n  const complianceScore = calculateComplianceScore(checks);\n  const needsHumanReview = complianceScore < 0.9;\n  \n  if (needsHumanReview) {\n    await sendToReviewQueue({\n      input: userInput,\n      output: systemOutput,\n      checks,\n      timestamp: new Date()\n    });\n  }\n  \n  return {\n    isCompliant: complianceScore >= 0.95,\n    needsHumanReview,\n    checks,\n    remediationSteps: generateRemediationSteps(checks)\n  };\n}"
+  },
+  {
+    "id": "finance",
+    "title": "金融应用",
+    "summary": "AI在金融领域的应用框架与最佳实践，平衡创新与合规，提升金融服务效率与体验。",
+    "points": [
+      "风险评估与管理增强",
+      "智能投顾与财务规划",
+      "反欺诈与异常交易检测",
+      "合规审查自动化",
+      "个性化金融服务"
+    ],
+    "codeExample": "// 金融领域AI应用示例 - 风险评分模型\nconst riskAssessmentModel = {\n  inputFeatures: [\n    'transactionAmount',\n    'customerRiskProfile',\n    'transactionFrequency',\n    'geographicalRisk',\n    'productRisk',\n    'behavioralPatterns'\n  ],\n  \n  calculateRiskScore: function(transaction, customerProfile) {\n    // 基础风险分数\n    let baseScore = this.calculateBaseRisk(transaction);\n    \n    // 客户风险调整\n    baseScore *= this.customerRiskMultiplier(customerProfile);\n    \n    // 行为模式分析\n    const behavioralAdjustment = this.analyzeBehavioralPatterns(\n      transaction,\n      customerProfile.transactionHistory\n    );\n    \n    // 最终风险评分\n    const finalScore = Math.min(100, baseScore + behavioralAdjustment);\n    \n    return {\n      score: finalScore,\n      riskLevel: this.mapScoreToRiskLevel(finalScore),\n      riskFactors: this.identifyKeyRiskFactors(transaction, customerProfile),\n      recommendedActions: this.generateRecommendations(finalScore)\n    };\n  }\n};"
+  }
+] 
