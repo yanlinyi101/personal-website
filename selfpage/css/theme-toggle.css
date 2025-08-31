@@ -1,0 +1,76 @@
+/**
+ * 主题切换按钮样式
+ * 固定在页面右下角
+ */
+
+.fixed-theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1.5rem;
+}
+
+.fixed-theme-toggle:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.fixed-theme-toggle:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 亮色模式显示月亮图标 */
+.light-mode .fixed-theme-toggle .icon-moon,
+.dark-mode .fixed-theme-toggle .icon-sun {
+    display: block;
+}
+
+.light-mode .fixed-theme-toggle .icon-sun,
+.dark-mode .fixed-theme-toggle .icon-moon {
+    display: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .fixed-theme-toggle {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
+    }
+}
+
+/* 无障碍焦点样式 */
+.fixed-theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.5), 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 动画效果 */
+.fixed-theme-toggle .icon-sun,
+.fixed-theme-toggle .icon-moon {
+    transition: transform 0.5s;
+}
+
+.fixed-theme-toggle:hover .icon-sun {
+    transform: rotate(45deg);
+}
+
+.fixed-theme-toggle:hover .icon-moon {
+    transform: rotate(-45deg);
+} 
