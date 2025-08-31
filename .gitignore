@@ -1,0 +1,6 @@
+# Ignore build/dep folders anywhere in repo
+**/node_modules/
+**/.next/
+**/.cache/
+**/dist/
+**/out/
