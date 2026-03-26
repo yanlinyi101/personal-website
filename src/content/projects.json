@@ -19,5 +19,61 @@
     "description": "开发RAG系统最佳实践框架，包括向量数据库选型、Embedding策略、检索优化等关键环节，提升相关性40%。",
     "icon": "search",
     "tags": ["RAG", "向量检索", "知识库"]
+  },
+  {
+    "id": "wx-ai-customer-service",
+    "title": "微信 AI 客服系统",
+    "description": "生产级 WeChat 小程序智能客服，支持 RAG 知识库检索、WebSocket 实时看板、一键人工接管与 AES-256 端对端加密。",
+    "icon": "bot",
+    "tags": ["LLM", "RAG", "FastAPI", "WebSocket"],
+    "github": "https://github.com/yanlinyi101/wx-ai-customer-service"
+  },
+  {
+    "id": "video-script-reverse-engineering-pro",
+    "title": "病毒视频逆向工程工具",
+    "description": "基于 React 19 + Gemini 的爆款视频脚本逆向分析工具，支持 CSV 模板批量提取与 Prompt 工程深度拆解。",
+    "icon": "video",
+    "tags": ["Gemini", "React 19", "Prompt工程"],
+    "github": "https://github.com/yanlinyi101/Video-Script-Reverse-Engineering-Pro"
+  },
+  {
+    "id": "lowcost-ai-customer-service-webhook",
+    "title": "Serverless AI 客服 Webhook",
+    "description": "基于腾讯云 SCF 的极低成本智能客服方案，RAG 知识库检索 + Serverless 架构，单次响应成本约 $0.07。",
+    "icon": "cloud",
+    "tags": ["Serverless", "RAG", "Python"],
+    "github": "https://github.com/yanlinyi101/lowcost-AI-customer-service-webhook"
+  },
+  {
+    "id": "video-script-master",
+    "title": "多步 AI 脚本生成工作流",
+    "description": "多步 AI 工作流驱动的视频脚本生成器，融合实时搜索与心理学说服原则，端到端自动化内容创作。",
+    "icon": "wand",
+    "tags": ["Gemini", "工作流", "Python"],
+    "github": "https://github.com/yanlinyi101/video-script-master"
+  },
+  {
+    "id": "invitehub",
+    "title": "InviteHub 邀请码管理系统",
+    "description": "基于 Cloudflare Workers + D1 的边缘部署邀请码管理平台，全球低延迟、零冷启动，TypeScript 全栈实现。",
+    "icon": "globe",
+    "tags": ["Cloudflare", "TypeScript", "Edge"],
+    "github": "https://github.com/yanlinyi101/invitehub"
+  },
+  {
+    "id": "documentary-guide",
+    "title": "AI 旅行行程规划 App",
+    "description": "React + Gemini 驱动的智能旅行行程规划 Web App，根据偏好自动生成个性化行程与景点推荐。",
+    "icon": "map",
+    "tags": ["React", "Gemini", "TypeScript"],
+    "github": "https://github.com/yanlinyi101/documentary-guide"
+  },
+  {
+    "id": "dairy-journal",
+    "title": "Claude Code 日志技能集成",
+    "description": "为 Claude Code 开发自定义技能，与 Obsidian 日记系统深度集成，实现 AI 辅助的每日复盘与知识沉淀。",
+    "icon": "book",
+    "tags": ["Claude Code", "Obsidian"],
+    "github": "https://github.com/yanlinyi101/dairy_journal"
   }
-] 
+]
