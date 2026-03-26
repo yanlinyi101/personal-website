@@ -1,548 +1,434 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yan Linyi的个人主页 - No Game, No Life</title>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yan Linyi · No Game, No Life</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            /* Warm peach tones extracted from the hero image */
-            --bg-start: #fce9d6;
-            --bg-end:   #f0c8a8;
-            --text:     #3a2516;
-            --text-dim: rgba(58, 37, 22, 0.5);
-            --accent:   #b86a38;
-            --nav-bg:   rgba(252, 233, 214, 0.72);
-        }
+    :root {
+      --ink:  #3a2010;
+      --ink2: rgba(58,32,16,.48);
+      --acc:  #c07040;
+    }
 
-        html { scroll-behavior: smooth; }
+    html, body {
+      min-height: 100vh;
+      font-family: 'Inter', 'Source Han Sans SC', -apple-system, sans-serif;
+      /*
+       * Three-layer background built from the image's own edge colours:
+       *   layer 1 — dusty-rose halo on the left  (matches image left edge ~#c09098)
+       *   layer 2 — warm-gold halo on the right  (matches image right edge ~#d4b070)
+       *   layer 3 — base warm-peach radial        (matches image centre)
+       * Together they eliminate the visible seam when the canvas mask fades out.
+       */
+      background:
+        radial-gradient(ellipse 72% 85% at  6% 50%, rgba(178,118,128,.40) 0%, transparent 56%),
+        radial-gradient(ellipse 55% 70% at 96% 54%, rgba(200,148, 80,.28) 0%, transparent 52%),
+        radial-gradient(ellipse 140% 130% at 50% 36%, #fde4cc 0%, #f0c4a0 44%, #e5a87c 100%);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
 
-        body {
-            font-family: 'Inter', 'Source Han Sans', -apple-system, sans-serif;
-            background: linear-gradient(145deg, var(--bg-start) 0%, var(--bg-end) 100%);
-            min-height: 100vh;
-            color: var(--text);
-            overflow-x: hidden;
-        }
+    /* ── nav ─────────────────────────────────── */
+    header {
+      position: fixed; inset: 0 0 auto;
+      background: rgba(253,228,204,.80);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(192,112,64,.10);
+      z-index: 100;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+    nav {
+      display: flex; align-items: center;
+      justify-content: space-between; height: 3.6rem;
+    }
+    .logo { font-weight: 700; font-size: 1rem; color: var(--ink); text-decoration: none; }
+    .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--ink2);
+      font-size: .75rem; font-weight: 500;
+      letter-spacing: .07em; text-transform: uppercase;
+      transition: color .15s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--acc); }
+    .menu-btn {
+      display: none; background: none; border: none;
+      font-size: 1.35rem; color: var(--ink); cursor: pointer; padding: .3rem;
+    }
+    @media (max-width: 640px) {
+      .menu-btn { display: block; }
+      .nav-links {
+        position: fixed; top: 3.6rem; inset: auto 0;
+        background: rgba(253,228,204,.97);
+        backdrop-filter: blur(16px);
+        flex-direction: column; align-items: center;
+        padding: 1.2rem 0; gap: .9rem;
+        transform: translateY(-110%);
+        transition: transform .26s ease;
+        z-index: 99;
+      }
+      .nav-links.open { transform: translateY(0); }
+    }
 
-        /* ── Nav ─────────────────────────────────────────── */
-        header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: var(--nav-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(180, 120, 80, 0.12);
-            z-index: 100;
-        }
+    /* ── hero ────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 5rem 1rem 3.5rem; gap: 1.6rem;
+    }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+    /*
+     * Wide card — 16:9, no border-radius, no clip.
+     * 3-D tilt applied here.
+     */
+    .card {
+      position: relative;
+      width: min(820px, 92vw);
+      aspect-ratio: 1376 / 768;
+      transform-style: preserve-3d;
+      transition: transform .07s linear;
+      cursor: crosshair;
+      will-change: transform;
+    }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 3.75rem;
-        }
+    /*
+     * Canvas fills the card.
+     * mask-image creates a four-edge vignette:
+     *   — fully opaque centre
+     *   — fades to transparent toward each edge
+     * Transparent pixels reveal the body background, which is
+     * colour-matched to the image edges → no visible seam.
+     *
+     * Fade zones: 20 % left/right, 14 % top/bottom.
+     * Wider zones = more gradual dissolve = any residual colour
+     * difference blends away over a longer distance.
+     */
+    #cvs {
+      display: block;
+      width: 100%; height: 100%;
+      -webkit-mask-image:
+        linear-gradient(to right,  transparent 0%, black 20%, black 80%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+      -webkit-mask-composite: destination-in;
+      mask-image:
+        linear-gradient(to right,  transparent 0%, black 20%, black 80%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
+      mask-composite: intersect;
+    }
 
-        .logo {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--text);
-            text-decoration: none;
-            letter-spacing: -0.01em;
-        }
+    /* ── text & buttons ──────────────────────── */
+    .hero-text { text-align: center; }
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700; letter-spacing: -.025em; line-height: 1.15;
+    }
+    .sub {
+      margin-top: .35rem; font-size: .78rem; color: var(--ink2);
+      letter-spacing: .09em; text-transform: uppercase;
+    }
+    .hint {
+      margin-top: .2rem; font-size: .68rem; color: var(--ink2);
+      transition: opacity .8s;
+    }
+    .hint.gone { opacity: 0; }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
+    .btns { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .38rem;
+      padding: .55rem 1.3rem; border-radius: .45rem;
+      font-size: .82rem; font-weight: 500; font-family: inherit;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: transform .15s, box-shadow .15s, background .15s;
+    }
+    .btn-solid { background: var(--acc); color: #fff; }
+    .btn-solid:hover {
+      background: #a85c2e; transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(192,112,64,.3);
+    }
+    .btn-out {
+      background: transparent; color: var(--acc);
+      border: 1.5px solid rgba(192,112,64,.38);
+    }
+    .btn-out:hover { border-color: var(--acc); transform: translateY(-1px); }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            transition: color 0.2s;
-        }
-
-        .nav-links a:hover, .nav-links a.active { color: var(--accent); }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text);
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 0.4rem;
-        }
-
-        @media (max-width: 680px) {
-            .menu-toggle { display: block; }
-
-            .nav-links {
-                position: fixed;
-                top: 3.75rem; left: 0; right: 0;
-                background: rgba(252, 233, 214, 0.97);
-                backdrop-filter: blur(16px);
-                flex-direction: column;
-                align-items: center;
-                padding: 1.25rem 0;
-                gap: 1rem;
-                transform: translateY(-110%);
-                transition: transform 0.28s ease;
-                z-index: 99;
-                border-bottom: 1px solid rgba(180,120,80,0.1);
-            }
-
-            .nav-links.open { transform: translateY(0); }
-        }
-
-        /* ── Hero ────────────────────────────────────────── */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 5rem 1rem 3rem;
-            gap: 2.25rem;
-        }
-
-        /* 3D card wrapper — tilt happens here */
-        .card-wrap {
-            position: relative;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            transform-style: preserve-3d;
-            transition: transform 0.08s linear;
-            cursor: crosshair;
-            /* Warm drop-shadow matching the image palette */
-            filter: drop-shadow(0 20px 40px rgba(160, 90, 40, 0.28))
-                    drop-shadow(0  6px 16px rgba(160, 90, 40, 0.18));
-            will-change: transform;
-        }
-
-        .card-wrap:hover {
-            filter: drop-shadow(0 30px 55px rgba(160, 90, 40, 0.36))
-                    drop-shadow(0  8px 20px rgba(160, 90, 40, 0.22));
-        }
-
-        /* Canvas fills the circle */
-        #img-canvas {
-            display: block;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            /* Subtle inner rim */
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
-        }
-
-        @media (max-width: 480px) {
-            .card-wrap, #img-canvas { width: 260px; height: 260px; }
-        }
-
-        /* ── Text block ──────────────────────────────────── */
-        .hero-text {
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-        }
-
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            color: var(--text);
-            line-height: 1.15;
-        }
-
-        .hero-sub {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        /* Hint label that fades after first hover */
-        .hover-hint {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            opacity: 1;
-            transition: opacity 0.6s;
-            pointer-events: none;
-            margin-top: 0.2rem;
-        }
-
-        .hover-hint.hidden { opacity: 0; }
-
-        /* ── CTA buttons ─────────────────────────────────── */
-        .hero-btns {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.6rem 1.3rem;
-            border-radius: 0.5rem;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.18s;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: #a05a2c;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(160,90,40,0.3);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--accent);
-            border: 1.5px solid rgba(184,106,56,0.4);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--accent);
-            transform: translateY(-1px);
-        }
-
-        /* ── Footer ──────────────────────────────────────── */
-        footer {
-            background: rgba(200, 130, 80, 0.1);
-            border-top: 1px solid rgba(180,120,80,0.12);
-            padding: 2rem 0;
-        }
-
-        .footer-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.8rem;
-            text-align: center;
-        }
-
-        @media (min-width: 640px) {
-            .footer-inner {
-                flex-direction: row;
-                justify-content: space-between;
-                text-align: left;
-            }
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 1.2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .footer-links a {
-            color: var(--text-dim);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 0.2s;
-        }
-
-        .footer-links a:hover { color: var(--accent); }
-
-        .copyright {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-    </style>
+    /* ── footer ──────────────────────────────── */
+    footer {
+      border-top: 1px solid rgba(192,112,64,.12);
+      padding: 2.2rem 0; background: rgba(234,170,128,.08);
+    }
+    .foot-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      align-items: center; justify-content: space-between;
+    }
+    .foot-links { display: flex; gap: 1.2rem; flex-wrap: wrap; }
+    .foot-links a {
+      color: var(--ink2); text-decoration: none;
+      font-size: .78rem; transition: color .15s;
+    }
+    .foot-links a:hover { color: var(--acc); }
+    .copy { margin-top: 1.4rem; text-align: center; font-size: .7rem; color: var(--ink2); }
+  </style>
 </head>
 <body>
 
-    <!-- ── Header ──────────────────────────────────────── -->
-    <header>
-        <div class="container">
-            <nav>
-                <a href="index.html" class="logo">Yan Linyi</a>
-                <button class="menu-toggle" aria-label="菜单">☰</button>
-                <div class="nav-links" id="nav-links">
-                    <a href="index.html" class="active">首页</a>
-                    <a href="playbook.html">方法论</a>
-                    <a href="writing.html">文章</a>
-                    <a href="about.html">关于我</a>
-                    <a href="cv.html">简历下载</a>
-                    <a href="contact.html">联系我</a>
-                </div>
-            </nav>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="index.html" class="logo">Yan Linyi</a>
+        <button class="menu-btn" aria-label="菜单">☰</button>
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html" class="active">首页</a></li>
+          <li><a href="playbook.html">方法论</a></li>
+          <li><a href="writing.html">文章</a></li>
+          <li><a href="about.html">关于我</a></li>
+          <li><a href="cv.html">简历</a></li>
+          <li><a href="contact.html">联系我</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card" id="card">
+        <canvas id="cvs"></canvas>
+      </div>
+
+      <div class="hero-text">
+        <h1>No Game, No Life</h1>
+        <p class="sub">Yan Linyi &nbsp;·&nbsp; 产品 &amp; AI</p>
+        <p class="hint" id="hint">移动光标探索图片</p>
+      </div>
+
+      <div class="btns">
+        <a href="cv.html" class="btn btn-solid">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.4"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          下载简历
+        </a>
+        <a href="about.html" class="btn btn-out">了解更多</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-row">
+        <div>
+          <strong>Yan Linyi的个人主页</strong>
+          <p style="font-size:.76rem;color:var(--ink2);margin-top:.15rem">No Game, No Life</p>
         </div>
-    </header>
-
-    <!-- ── Hero ────────────────────────────────────────── -->
-    <main>
-        <section class="hero">
-
-            <!-- Interactive image card -->
-            <div class="card-wrap" id="card-wrap">
-                <canvas id="img-canvas"></canvas>
-            </div>
-
-            <!-- Text -->
-            <div class="hero-text">
-                <h1 class="hero-title">No Game, No Life</h1>
-                <p class="hero-sub">Yan Linyi · 产品 &amp; AI</p>
-                <p class="hover-hint" id="hover-hint">悬停图片 · 移动光标探索</p>
-            </div>
-
-            <!-- CTA -->
-            <div class="hero-btns">
-                <a href="cv.html" class="btn btn-primary">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.2"
-                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    下载简历
-                </a>
-                <a href="about.html" class="btn btn-outline">了解更多</a>
-            </div>
-
-        </section>
-    </main>
-
-    <!-- ── Footer ──────────────────────────────────────── -->
-    <footer>
-        <div class="container">
-            <div class="footer-inner">
-                <div>
-                    <strong>Yan Linyi的个人主页</strong>
-                    <p style="font-size:0.8rem; color:var(--text-dim); margin-top:0.2rem">No Game, No Life</p>
-                </div>
-                <div class="footer-links">
-                    <a href="mailto:contact@example.com">Email</a>
-                    <a href="#">LinkedIn</a>
-                    <a href="#">知乎</a>
-                    <a href="#">微信</a>
-                </div>
-            </div>
-            <p class="copyright">&copy; 2025 Linyi Yan. All rights reserved.</p>
+        <div class="foot-links">
+          <a href="mailto:contact@example.com">Email</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">知乎</a>
+          <a href="#">微信</a>
         </div>
-    </footer>
+      </div>
+      <p class="copy">&copy; 2025 Linyi Yan. All rights reserved.</p>
+    </div>
+  </footer>
 
-    <!-- ── Scripts ─────────────────────────────────────── -->
-    <script src="js/time-utility.js"></script>
-    <script src="js/theme-switcher.js"></script>
+  <script src="js/time-utility.js"></script>
+  <script src="js/theme-switcher.js"></script>
 
-    <script>
-    /* ══════════════════════════════════════════════════════
-       Mobile nav toggle
-    ══════════════════════════════════════════════════════ */
-    (function () {
-        var toggle = document.querySelector('.menu-toggle');
-        var nav    = document.getElementById('nav-links');
-        if (!toggle) return;
-        toggle.addEventListener('click', function () { nav.classList.toggle('open'); });
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('header')) nav.classList.remove('open');
-        });
-    })();
+  <script>
+  /* ── mobile nav ─────────────────────────── */
+  (function () {
+    var btn = document.querySelector('.menu-btn');
+    var nav = document.getElementById('nav-links');
+    if (!btn) return;
+    btn.addEventListener('click', function () { nav.classList.toggle('open'); });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('header')) nav.classList.remove('open');
+    });
+  })();
 
+  /* ════════════════════════════════════════════════════════
+     PARTICLE ENGINE  — video-inspired organic dust
+     ════════════════════════════════════════════════════════
+     Rendering strategy
+     ───────────────────
+     • offscreen canvas holds the full-resolution image — drawn once
+     • each frame: copy offscreen → visible canvas (sharp, no pixelation)
+     • active tiles: erase home pixel via destination-out composite,
+       then draw a small glowing dot at the drifting position
+     • this way the base image is always crisp; only "departed" pixels
+       become small floating particles
 
-    /* ══════════════════════════════════════════════════════
-       Particle Image Engine
-       ─────────────────────────────────────────────────────
-       Loads the image onto a canvas as a grid of BLOCK×BLOCK
-       colour samples.  On mousemove, blocks within RADIUS of
-       the cursor fly outward; on mouseleave they spring back.
-    ══════════════════════════════════════════════════════ */
-    (function () {
-        var BLOCK   = 5;    // px — size of each sampled tile
-        var RADIUS  = 80;   // px — cursor influence radius
-        var SPRING  = 0.14; // return spring stiffness
-        var DAMPING = 0.72; // velocity damping (0-1)
-        var LAUNCH  = 9;    // max launch speed multiplier
+     Motion (video-style)
+     ─────────────────────
+     • slow initial speed (dusty, not explosive)
+     • sinusoidal lateral wander — organic float
+     • slight upward bias — lighter-than-air feel
+     • damped spring return on mouse-leave
+  ════════════════════════════════════════════════════════ */
+  (function () {
+    var STEP   = 4;    // sample grid spacing (px) — fewer tiles, same image sharpness
+    var DOT    = 2;    // particle dot radius (px)
+    var RADIUS = 88;   // cursor influence radius (canvas px)
+    var MAX_D  = 115;  // distance → fully faded
+    var SPEED  = 1.0;  // max launch speed (canvas px/frame)
+    var SPRING = 0.11;
+    var DAMP   = 0.72;
+    var GLOW   = 6;    // shadowBlur for each dot
 
-        var canvas   = document.getElementById('img-canvas');
-        var ctx      = canvas.getContext('2d');
-        var cardWrap = document.getElementById('card-wrap');
-        var hint     = document.getElementById('hover-hint');
-        var hintShown = false;
+    var cvs    = document.getElementById('cvs');
+    var ctx    = cvs.getContext('2d');
+    var card   = document.getElementById('card');
+    var hint   = document.getElementById('hint');
 
-        var blocks   = [];
-        var mouseX   = -9999;
-        var mouseY   = -9999;
-        var hovering = false;
-        var rafId    = null;
-        var imgW = 0, imgH = 0;
+    var offscr = document.createElement('canvas');
+    var octx   = offscr.getContext('2d');
 
-        /* ── Load image, sample into blocks ──────────────── */
-        var img = new Image();
-        img.onload = function () {
-            imgW = img.naturalWidth;
-            imgH = img.naturalHeight;
+    var tiles  = [];
+    var imgW = 0, imgH = 0;
+    var mx = -9999, my = -9999;
+    var over   = false;
+    var hinted = false;
 
-            // Internal canvas resolution = image native size
-            canvas.width  = imgW;
-            canvas.height = imgH;
+    /* ── load & sample ──────────────────────── */
+    var img = new Image();
+    img.onload = function () {
+      imgW = img.naturalWidth;
+      imgH = img.naturalHeight;
+      cvs.width    = imgW;
+      cvs.height   = imgH;
+      offscr.width  = imgW;
+      offscr.height = imgH;
 
-            // Draw image once to read pixel data
-            ctx.drawImage(img, 0, 0);
-            var pxData = ctx.getImageData(0, 0, imgW, imgH).data;
+      octx.drawImage(img, 0, 0);
+      var pd = octx.getImageData(0, 0, imgW, imgH).data;
 
-            blocks = [];
-            for (var cy = 0; cy < imgH; cy += BLOCK) {
-                for (var cx = 0; cx < imgW; cx += BLOCK) {
-                    // Sample centre pixel of this block
-                    var sx  = Math.min(cx + Math.floor(BLOCK / 2), imgW - 1);
-                    var sy  = Math.min(cy + Math.floor(BLOCK / 2), imgH - 1);
-                    var idx = (sy * imgW + sx) * 4;
-                    var r   = pxData[idx];
-                    var g   = pxData[idx + 1];
-                    var b   = pxData[idx + 2];
-                    var a   = pxData[idx + 3];
-                    if (a < 8) continue; // skip fully transparent
+      for (var ty = 0; ty < imgH; ty += STEP) {
+        for (var tx = 0; tx < imgW; tx += STEP) {
+          var sx = Math.min(tx + (STEP >> 1), imgW - 1);
+          var sy = Math.min(ty + (STEP >> 1), imgH - 1);
+          var i  = (sy * imgW + sx) * 4;
+          if (pd[i + 3] < 10) continue;
+          tiles.push({
+            hx: tx, hy: ty, x: tx, y: ty,
+            vx: 0, vy: 0,
+            col: 'rgb(' + pd[i] + ',' + pd[i+1] + ',' + pd[i+2] + ')',
+            phase: Math.random() * Math.PI * 2,
+            freq:  0.020 + Math.random() * 0.022,
+            amp:   0.28  + Math.random() * 0.52,
+            t: 0, alpha: 1, active: false
+          });
+        }
+      }
+      requestAnimationFrame(loop);
+    };
+    img.src = 'public/images/avatar.jpg';
 
-                    blocks.push({
-                        hx: cx, hy: cy,   // home position
-                        x:  cx, y:  cy,   // current position
-                        vx: 0,  vy: 0,    // velocity
-                        color: 'rgb(' + r + ',' + g + ',' + b + ')',
-                        alpha: 1,
-                        launched: false
-                    });
-                }
-            }
+    /* ── render loop ────────────────────────── */
+    function loop() {
+      /* 1. Sharp full image */
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur  = 0;
+      ctx.drawImage(offscr, 0, 0);
 
-            rafId = requestAnimationFrame(tick);
-        };
-        img.src = 'public/images/avatar.jpg';
+      /* 2. Erase home pixels of active tiles (punch holes) */
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = '#000';
+      for (var i = 0; i < tiles.length; i++) {
+        var t = tiles[i];
+        var d2h = Math.hypot(t.x - t.hx, t.y - t.hy);
+        if (!t.active && d2h < 0.6) continue;
+        var ea = t.active ? t.alpha : Math.min(1, d2h / 10);
+        if (ea < 0.02) continue;
+        ctx.globalAlpha = ea;
+        ctx.fillRect(t.hx, t.hy, STEP, STEP);
+      }
 
-        /* ── Animation loop ───────────────────────────────── */
-        function tick() {
-            ctx.clearRect(0, 0, imgW, imgH);
+      /* 3. Draw glowing particle dots */
+      ctx.globalCompositeOperation = 'source-over';
+      for (var i = 0; i < tiles.length; i++) {
+        var t = tiles[i];
 
-            for (var i = 0; i < blocks.length; i++) {
-                var bl = blocks[i];
-                var dx = bl.hx + BLOCK * 0.5 - mouseX;
-                var dy = bl.hy + BLOCK * 0.5 - mouseY;
-                var dist = Math.sqrt(dx * dx + dy * dy);
+        /* physics */
+        var dx   = t.hx + STEP * 0.5 - mx;
+        var dy   = t.hy + STEP * 0.5 - my;
+        var dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (hovering && dist < RADIUS) {
-                    // ── Launch away from cursor ────────────
-                    if (!bl.launched) {
-                        var influence = 1 - dist / RADIUS;
-                        var angle = Math.atan2(-dy, -dx) + (Math.random() - 0.5) * 1.2;
-                        var speed = influence * LAUNCH + Math.random() * 3;
-                        bl.vx = Math.cos(angle) * speed;
-                        bl.vy = Math.sin(angle) * speed;
-                        bl.launched = true;
-                    }
-                    bl.x += bl.vx;
-                    bl.y += bl.vy;
-                    bl.vx *= 0.93;
-                    bl.vy *= 0.93;
-
-                    // Fade as it travels away from home
-                    var gone = Math.sqrt(
-                        (bl.x - bl.hx) * (bl.x - bl.hx) +
-                        (bl.y - bl.hy) * (bl.y - bl.hy)
-                    );
-                    bl.alpha = Math.max(0, 1 - gone / 110);
-                } else {
-                    // ── Spring back home ───────────────────
-                    bl.launched = false;
-                    bl.vx = (bl.vx + (bl.hx - bl.x) * SPRING) * DAMPING;
-                    bl.vy = (bl.vy + (bl.hy - bl.y) * SPRING) * DAMPING;
-                    bl.x += bl.vx;
-                    bl.y += bl.vy;
-                    // Fade back in as it nears home
-                    var nearHome = Math.sqrt(
-                        (bl.x - bl.hx) * (bl.x - bl.hx) +
-                        (bl.y - bl.hy) * (bl.y - bl.hy)
-                    );
-                    bl.alpha = Math.min(1, bl.alpha + 0.06);
-                    if (nearHome > 80) bl.alpha = Math.min(bl.alpha, 1 - nearHome / 130);
-                }
-
-                ctx.globalAlpha = bl.alpha;
-                ctx.fillStyle   = bl.color;
-                ctx.fillRect(bl.x, bl.y, BLOCK, BLOCK);
-            }
-
-            ctx.globalAlpha = 1;
-            rafId = requestAnimationFrame(tick);
+        if (over && dist < RADIUS) {
+          if (!t.active) {
+            var inf   = 1 - dist / RADIUS;
+            var angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.1;
+            var spd   = inf * SPEED * (0.45 + Math.random() * 0.55);
+            t.vx = Math.cos(angle) * spd;
+            t.vy = Math.sin(angle) * spd - 0.18;
+            t.active = true; t.t = 0;
+          }
+          t.t++;
+          var vl = Math.sqrt(t.vx * t.vx + t.vy * t.vy) || 1;
+          var wander = t.amp * Math.sin(t.phase + t.t * t.freq);
+          t.x += t.vx + (-t.vy / vl) * wander;
+          t.y += t.vy + ( t.vx / vl) * wander;
+          t.vx *= 0.987; t.vy *= 0.987;
+          t.alpha = Math.max(0, 1 - Math.hypot(t.x - t.hx, t.y - t.hy) / MAX_D);
+        } else {
+          t.active = false;
+          t.vx = (t.vx + (t.hx - t.x) * SPRING) * DAMP;
+          t.vy = (t.vy + (t.hy - t.y) * SPRING) * DAMP;
+          t.x += t.vx; t.y += t.vy;
+          var d2h = Math.hypot(t.x - t.hx, t.y - t.hy);
+          t.alpha = Math.min(1, d2h / 8);
+          if (d2h < 0.4) { t.x = t.hx; t.y = t.hy; t.vx = 0; t.vy = 0; continue; }
         }
 
-        /* ── Mouse → canvas coordinate transform ─────────── */
-        function toCanvasCoords(clientX, clientY) {
-            var rect  = canvas.getBoundingClientRect();
-            // scale from CSS display size to internal canvas resolution
-            var scaleX = imgW / rect.width;
-            var scaleY = imgH / rect.height;
-            return {
-                x: (clientX - rect.left) * scaleX,
-                y: (clientY - rect.top)  * scaleY
-            };
-        }
+        if (t.alpha < 0.04) continue;
+        ctx.shadowBlur  = GLOW;
+        ctx.shadowColor = t.col;
+        ctx.globalAlpha = t.alpha;
+        ctx.fillStyle   = t.col;
+        ctx.beginPath();
+        ctx.arc(t.x + STEP * 0.5, t.y + STEP * 0.5, DOT, 0, 6.2832);
+        ctx.fill();
+      }
 
-        /* ── 3-D tilt ─────────────────────────────────────── */
-        cardWrap.addEventListener('mousemove', function (e) {
-            hovering = true;
+      ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+      ctx.globalCompositeOperation = 'source-over';
+      requestAnimationFrame(loop);
+    }
 
-            // Hide hint after first interaction
-            if (!hintShown) {
-                hintShown = true;
-                hint.classList.add('hidden');
-            }
+    /* ── coordinate conversion ──────────────── */
+    function toCvs(cx, cy) {
+      var r = cvs.getBoundingClientRect();
+      return { x: (cx - r.left) * (imgW / r.width), y: (cy - r.top) * (imgH / r.height) };
+    }
 
-            // 3-D rotation
-            var rect = cardWrap.getBoundingClientRect();
-            var nx = (e.clientX - rect.left  - rect.width  / 2) / (rect.width  / 2); // -1..1
-            var ny = (e.clientY - rect.top   - rect.height / 2) / (rect.height / 2); // -1..1
-            var rotY =  nx * 18;   // max ±18°
-            var rotX = -ny * 18;
-            cardWrap.style.transform =
-                'perspective(700px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale3d(1.04,1.04,1.04)';
+    /* ── 3-D tilt (±14°) — no translation ──── */
+    card.addEventListener('mousemove', function (e) {
+      over = true;
+      if (!hinted) { hinted = true; hint.classList.add('gone'); }
 
-            // Particle mouse position (in canvas pixel space)
-            var pos = toCanvasCoords(e.clientX, e.clientY);
-            mouseX = pos.x;
-            mouseY = pos.y;
-        });
+      var r  = card.getBoundingClientRect();
+      var nx = (e.clientX - r.left  - r.width  / 2) / (r.width  / 2);
+      var ny = (e.clientY - r.top   - r.height / 2) / (r.height / 2);
+      card.style.transform =
+        'perspective(900px) rotateX(' + (-ny * 14) + 'deg) rotateY(' + (nx * 14) + 'deg) scale3d(1.02,1.02,1.02)';
 
-        cardWrap.addEventListener('mouseleave', function () {
-            hovering = false;
-            mouseX   = -9999;
-            mouseY   = -9999;
-            cardWrap.style.transform =
-                'perspective(700px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
-        });
+      var p = toCvs(e.clientX, e.clientY);
+      mx = p.x; my = p.y;
+    });
 
-        /* Touch: disable 3D on touch devices to avoid stickiness */
-        cardWrap.addEventListener('touchstart', function () {
-            cardWrap.style.cursor = 'default';
-        }, { passive: true });
-    })();
-    </script>
+    card.addEventListener('mouseleave', function () {
+      over = false; mx = -9999; my = -9999;
+      card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+    });
+  })();
+  </script>
+
 </body>
 </html>
