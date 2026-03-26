@@ -4,433 +4,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yan Linyi的个人主页 - No Game, No Life</title>
-    <link rel="stylesheet" href="css/theme-toggle.css">
     <style>
-        /* ── Reset & Base ───────────────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --primary: #2F80ED;
-            --hero-bg: #090a0f;
-            --status-green: #48c774;
-            --text-primary: rgba(255, 255, 255, 0.92);
-            --text-dim: rgba(255, 255, 255, 0.45);
-            --input-bg: rgba(255, 255, 255, 0.07);
-            --input-border: rgba(255, 255, 255, 0.12);
+            /* Warm peach tones extracted from the hero image */
+            --bg-start: #fce9d6;
+            --bg-end:   #f0c8a8;
+            --text:     #3a2516;
+            --text-dim: rgba(58, 37, 22, 0.5);
+            --accent:   #b86a38;
+            --nav-bg:   rgba(252, 233, 214, 0.72);
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter', 'Source Han Sans', -apple-system, sans-serif;
-            background-color: var(--hero-bg);
-            color: var(--text-primary);
-            line-height: 1.6;
+            background: linear-gradient(145deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            min-height: 100vh;
+            color: var(--text);
             overflow-x: hidden;
         }
 
-        /* ── Header / Nav ───────────────────────────────────── */
+        /* ── Nav ─────────────────────────────────────────── */
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
-            background-color: rgba(9, 10, 15, 0.65);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            top: 0; left: 0; right: 0;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(180, 120, 80, 0.12);
             z-index: 100;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
 
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 4rem;
+            height: 3.75rem;
         }
 
         .logo {
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
             text-decoration: none;
-            letter-spacing: 0.02em;
+            letter-spacing: -0.01em;
         }
 
         .nav-links {
             display: flex;
             gap: 2rem;
-            align-items: center;
             list-style: none;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-dim);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 500;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
             transition: color 0.2s;
         }
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--text-primary);
-        }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent); }
 
         .menu-toggle {
             display: none;
             background: none;
             border: none;
-            color: var(--text-primary);
-            font-size: 1.5rem;
+            color: var(--text);
+            font-size: 1.4rem;
             cursor: pointer;
-            padding: 0.5rem;
+            padding: 0.4rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 680px) {
             .menu-toggle { display: block; }
 
             .nav-links {
                 position: fixed;
-                top: 4rem;
-                left: 0; right: 0;
-                background-color: rgba(9, 10, 15, 0.95);
-                backdrop-filter: blur(20px);
+                top: 3.75rem; left: 0; right: 0;
+                background: rgba(252, 233, 214, 0.97);
+                backdrop-filter: blur(16px);
                 flex-direction: column;
                 align-items: center;
-                padding: 1.5rem 0;
-                gap: 1.25rem;
+                padding: 1.25rem 0;
+                gap: 1rem;
                 transform: translateY(-110%);
-                transition: transform 0.3s ease;
+                transition: transform 0.28s ease;
                 z-index: 99;
+                border-bottom: 1px solid rgba(180,120,80,0.1);
             }
 
-            .nav-links.active { transform: translateY(0); }
-
-            .nav-links a {
-                font-size: 0.875rem;
-                padding: 0.4rem 0;
-            }
+            .nav-links.open { transform: translateY(0); }
         }
 
-        /* ── Hero ───────────────────────────────────────────── */
+        /* ── Hero ────────────────────────────────────────── */
         .hero {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            min-height: 600px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            background: radial-gradient(ellipse 80% 60% at 50% 55%,
-                rgba(30, 60, 110, 0.35) 0%,
-                rgba(9, 10, 15, 0) 70%),
-                var(--hero-bg);
+            padding: 5rem 1rem 3rem;
+            gap: 2.25rem;
         }
 
-        #particle-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .hero-inner {
+        /* 3D card wrapper — tilt happens here */
+        .card-wrap {
             position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.75rem;
-            width: 100%;
-            padding: 0 1rem;
-        }
-
-        /* ── AI Status Label ────────────────────────────────── */
-        .ai-label {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            animation: fadeSlideDown 0.8s ease both;
-        }
-
-        .waveform {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 20px;
-        }
-
-        .waveform span {
-            display: block;
-            width: 3px;
-            border-radius: 2px;
-            background: var(--text-dim);
-            animation: waveBar 1.2s ease-in-out infinite;
-        }
-
-        .waveform span:nth-child(1) { animation-delay: 0.00s; height: 6px; }
-        .waveform span:nth-child(2) { animation-delay: 0.15s; height: 10px; }
-        .waveform span:nth-child(3) { animation-delay: 0.30s; height: 16px; }
-        .waveform span:nth-child(4) { animation-delay: 0.45s; height: 10px; }
-        .waveform span:nth-child(5) { animation-delay: 0.60s; height: 6px; }
-
-        @keyframes waveBar {
-            0%, 100% { transform: scaleY(0.35); opacity: 0.5; }
-            50%       { transform: scaleY(1);    opacity: 1; }
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
+            width: 320px;
+            height: 320px;
             border-radius: 50%;
-            background: var(--status-green);
-            flex-shrink: 0;
-            animation: dotPulse 2s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: transform 0.08s linear;
+            cursor: crosshair;
+            /* Warm drop-shadow matching the image palette */
+            filter: drop-shadow(0 20px 40px rgba(160, 90, 40, 0.28))
+                    drop-shadow(0  6px 16px rgba(160, 90, 40, 0.18));
+            will-change: transform;
         }
 
-        @keyframes dotPulse {
-            0%, 100% { box-shadow: 0 0 0 0   rgba(72, 199, 116, 0.55); }
-            50%       { box-shadow: 0 0 0 7px rgba(72, 199, 116, 0); }
+        .card-wrap:hover {
+            filter: drop-shadow(0 30px 55px rgba(160, 90, 40, 0.36))
+                    drop-shadow(0  8px 20px rgba(160, 90, 40, 0.22));
         }
 
-        .ai-name {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            letter-spacing: 0.04em;
-        }
-
-        /* ── Visual Wrap ────────────────────────────────────── */
-        .visual-wrap {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            animation: fadeSlideUp 1s ease 0.2s both;
+        /* Canvas fills the circle */
+        #img-canvas {
+            display: block;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            /* Subtle inner rim */
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
         }
 
         @media (max-width: 480px) {
-            .visual-wrap { width: 220px; height: 220px; }
+            .card-wrap, #img-canvas { width: 260px; height: 260px; }
         }
 
-        /* Glow ring behind image */
-        .visual-wrap::before {
-            content: '';
-            position: absolute;
-            inset: -30%;
-            border-radius: 50%;
-            background: radial-gradient(circle,
-                rgba(60, 120, 200, 0.4)  0%,
-                rgba(30, 60, 120, 0.15) 50%,
-                transparent 70%);
-            animation: glowPulse 4s ease-in-out infinite;
+        /* ── Text block ──────────────────────────────────── */
+        .hero-text {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--text);
+            line-height: 1.15;
+        }
+
+        .hero-sub {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Hint label that fades after first hover */
+        .hover-hint {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            opacity: 1;
+            transition: opacity 0.6s;
             pointer-events: none;
+            margin-top: 0.2rem;
         }
 
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50%       { opacity: 1;   transform: scale(1.08); }
+        .hover-hint.hidden { opacity: 0; }
+
+        /* ── CTA buttons ─────────────────────────────────── */
+        .hero-btns {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .center-image {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            overflow: hidden;
-            animation: breathe 6s ease-in-out infinite;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.3rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.18s;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
         }
 
-        /* If user swaps to <img>, give it same sizing */
-        .center-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
         }
 
-        @keyframes breathe {
-            0%, 100% { transform: scale(1)     translateY(0px); }
-            50%       { transform: scale(1.025) translateY(-8px); }
+        .btn-primary:hover {
+            background: #a05a2c;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(160,90,40,0.3);
         }
 
-        /* Placeholder — pure CSS, no image file needed */
-        .placeholder-img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background:
-                radial-gradient(circle at 38% 32%,
-                    #d0e8f8 0%,
-                    #8ab8d8 18%,
-                    #4a88b8 38%,
-                    #235080 60%,
-                    #0e2035 80%,
-                    #060d18 100%);
-            box-shadow:
-                0 0 50px 15px rgba(60, 120, 200, 0.30),
-                inset 0 0 50px rgba(0, 0, 0, 0.55);
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 1.5px solid rgba(184,106,56,0.4);
         }
 
-        /* ── Bottom Area ────────────────────────────────────── */
-        .bottom-area {
+        .btn-outline:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* ── Footer ──────────────────────────────────────── */
+        footer {
+            background: rgba(200, 130, 80, 0.1);
+            border-top: 1px solid rgba(180,120,80,0.12);
+            padding: 2rem 0;
+        }
+
+        .footer-inner {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.9rem;
-            width: 100%;
-            max-width: 420px;
-            animation: fadeSlideUp 1s ease 0.45s both;
-        }
-
-        .hero-caption {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            letter-spacing: 0.01em;
+            gap: 0.8rem;
             text-align: center;
         }
 
-        .input-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            width: 100%;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 0.6rem;
-            padding: 0.55rem 0.55rem 0.55rem 1rem;
-            transition: border-color 0.2s;
-        }
-
-        .input-row:focus-within {
-            border-color: rgba(100, 160, 220, 0.45);
-        }
-
-        .hero-input {
-            flex: 1;
-            background: none;
-            border: none;
-            outline: none;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            font-family: inherit;
-        }
-
-        .hero-input::placeholder { color: var(--text-dim); }
-
-        .mic-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 0.45rem;
-            background: rgba(255, 255, 255, 0.08);
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            flex-shrink: 0;
-        }
-
-        .mic-btn:hover {
-            background: rgba(100, 160, 220, 0.2);
-            color: var(--text-primary);
-        }
-
-        .save-memory-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        .save-memory-bar .timer {
-            font-variant-numeric: tabular-nums;
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        .save-memory-link {
-            color: rgba(160, 200, 240, 0.8);
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 0.75rem;
-            font-family: inherit;
-            transition: color 0.2s;
-            padding: 0;
-        }
-
-        .save-memory-link:hover { color: #fff; }
-
-        .dismiss-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 0 0.1rem;
-            transition: color 0.2s;
-        }
-
-        .dismiss-btn:hover { color: var(--text-primary); }
-
-        /* ── Entrance animations ────────────────────────────── */
-        @keyframes fadeSlideDown {
-            from { opacity: 0; transform: translateY(-14px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ── Footer ─────────────────────────────────────────── */
-        footer {
-            background-color: rgba(9, 10, 15, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.07);
-            padding: 2.5rem 0;
-        }
-
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .footer-content {
+        @media (min-width: 640px) {
+            .footer-inner {
                 flex-direction: row;
                 justify-content: space-between;
+                text-align: left;
             }
-        }
-
-        .footer-logo {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-
-        .footer-tagline {
-            margin-top: 0.35rem;
-            font-size: 0.8rem;
-            color: var(--text-dim);
         }
 
         .footer-links {
             display: flex;
-            gap: 1.25rem;
+            gap: 1.2rem;
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -442,38 +266,25 @@
             transition: color 0.2s;
         }
 
-        .footer-links a:hover { color: var(--text-primary); }
+        .footer-links a:hover { color: var(--accent); }
 
         .copyright {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             text-align: center;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.25);
-        }
-
-        /* ── Greeting ───────────────────────────────────────── */
-        .greeting {
-            position: absolute;
-            top: 4.5rem;
-            right: 1.5rem;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-dim);
-            z-index: 5;
-            pointer-events: none;
         }
-
-        @media (max-width: 768px) { .greeting { display: none; } }
     </style>
 </head>
 <body>
 
-    <!-- ── Header ──────────────────────────────────────────── -->
+    <!-- ── Header ──────────────────────────────────────── -->
     <header>
         <div class="container">
             <nav>
                 <a href="index.html" class="logo">Yan Linyi</a>
-                <button class="menu-toggle" aria-label="Toggle menu">☰</button>
-                <div class="nav-links">
+                <button class="menu-toggle" aria-label="菜单">☰</button>
+                <div class="nav-links" id="nav-links">
                     <a href="index.html" class="active">首页</a>
                     <a href="playbook.html">方法论</a>
                     <a href="writing.html">文章</a>
@@ -483,74 +294,49 @@
                 </div>
             </nav>
         </div>
-        <div class="greeting" id="time-greeting"></div>
     </header>
 
-    <!-- ── Hero ────────────────────────────────────────────── -->
+    <!-- ── Hero ────────────────────────────────────────── -->
     <main>
         <section class="hero">
-            <canvas id="particle-canvas"></canvas>
 
-            <div class="hero-inner">
-
-                <!-- AI Status Label -->
-                <div class="ai-label">
-                    <div class="waveform" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span><span></span>
-                    </div>
-                    <span class="status-dot"></span>
-                    <span class="ai-name">Yan Linyi</span>
-                </div>
-
-                <!-- Central visual
-                     To replace: swap the div.placeholder-img with:
-                     <img src="public/images/your-photo.jpg" alt="Yan Linyi" class="center-image" />
-                -->
-                <div class="visual-wrap">
-                    <div class="center-image placeholder-img"></div>
-                </div>
-
-                <!-- Caption + Input -->
-                <div class="bottom-area">
-                    <p class="hero-caption">No Game, No Life</p>
-
-                    <div class="input-row">
-                        <input
-                            type="text"
-                            placeholder="type here..."
-                            class="hero-input"
-                            autocomplete="off"
-                        />
-                        <button class="mic-btn" aria-label="Voice input">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                <line x1="12" y1="19" x2="12" y2="23"/>
-                                <line x1="8"  y1="23" x2="16" y2="23"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="save-memory-bar" id="save-memory-bar">
-                        <span class="timer" id="memory-timer">00:03</span>
-                        <button class="save-memory-link">Save Memory ›</button>
-                        <button class="dismiss-btn" id="dismiss-memory" aria-label="Dismiss">✕</button>
-                    </div>
-                </div>
-
+            <!-- Interactive image card -->
+            <div class="card-wrap" id="card-wrap">
+                <canvas id="img-canvas"></canvas>
             </div>
+
+            <!-- Text -->
+            <div class="hero-text">
+                <h1 class="hero-title">No Game, No Life</h1>
+                <p class="hero-sub">Yan Linyi · 产品 &amp; AI</p>
+                <p class="hover-hint" id="hover-hint">悬停图片 · 移动光标探索</p>
+            </div>
+
+            <!-- CTA -->
+            <div class="hero-btns">
+                <a href="cv.html" class="btn btn-primary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    下载简历
+                </a>
+                <a href="about.html" class="btn btn-outline">了解更多</a>
+            </div>
+
         </section>
     </main>
 
-    <!-- ── Footer ──────────────────────────────────────────── -->
+    <!-- ── Footer ──────────────────────────────────────── -->
     <footer>
         <div class="container">
-            <div class="footer-content">
+            <div class="footer-inner">
                 <div>
-                    <div class="footer-logo">Yan Linyi的个人主页</div>
-                    <p class="footer-tagline">No Game, No Life</p>
+                    <strong>Yan Linyi的个人主页</strong>
+                    <p style="font-size:0.8rem; color:var(--text-dim); margin-top:0.2rem">No Game, No Life</p>
                 </div>
                 <div class="footer-links">
                     <a href="mailto:contact@example.com">Email</a>
@@ -563,147 +349,200 @@
         </div>
     </footer>
 
-    <!-- ── Scripts ─────────────────────────────────────────── -->
+    <!-- ── Scripts ─────────────────────────────────────── -->
     <script src="js/time-utility.js"></script>
     <script src="js/theme-switcher.js"></script>
 
     <script>
-    /* ════════════════════════════════════════════════════
-       Canvas Particle System
-       Particles drift in an elliptical cloud around the
-       center image, producing the nebula/dust halo effect.
-    ════════════════════════════════════════════════════ */
+    /* ══════════════════════════════════════════════════════
+       Mobile nav toggle
+    ══════════════════════════════════════════════════════ */
     (function () {
-        var canvas = document.getElementById('particle-canvas');
-        var ctx    = canvas.getContext('2d');
-        var W, H, cx, cy, rx, ry;
-        var PARTICLE_COUNT = 180;
-        var particles = [];
-
-        function resize() {
-            W  = canvas.width  = window.innerWidth;
-            H  = canvas.height = window.innerHeight;
-            cx = W / 2;
-            cy = H / 2 - 20;
-            rx = Math.min(W * 0.26, 200);
-            ry = rx * 0.62;
-        }
-
-        function rand(min, max) { return min + Math.random() * (max - min); }
-
-        function initParticles() {
-            particles = [];
-            for (var i = 0; i < PARTICLE_COUNT; i++) {
-                particles.push({
-                    angle:       rand(0, Math.PI * 2),
-                    spread:      rand(0.55, 1.45),
-                    driftX:      rand(-18, 18),
-                    driftY:      rand(-12, 12),
-                    speed:       rand(0.0003, 0.0012),
-                    size:        rand(0.8, 2.6),
-                    baseOpacity: rand(0.18, 0.85),
-                    opacity:     0,
-                    phase:       rand(0, Math.PI * 2),
-                    wobbleAmp:   rand(4, 20),
-                    wobbleSpeed: rand(0.4, 1.2),
-                    r: Math.floor(rand(140, 210)),
-                    g: Math.floor(rand(180, 230)),
-                    b: 255
-                });
-            }
-        }
-
-        var lastT = 0;
-        function draw(t) {
-            var dt = Math.min(t - lastT, 40);
-            lastT  = t;
-            ctx.clearRect(0, 0, W, H);
-
-            for (var i = 0; i < particles.length; i++) {
-                var p = particles[i];
-                p.angle += p.speed * dt;
-
-                var wobble = p.wobbleAmp * Math.sin(p.wobbleSpeed * t * 0.001 + p.phase);
-                var ex = cx + (rx * p.spread + wobble)       * Math.cos(p.angle) + p.driftX;
-                var ey = cy + (ry * p.spread + wobble * 0.5) * Math.sin(p.angle) + p.driftY;
-
-                p.opacity = p.baseOpacity * (0.6 + 0.4 * Math.sin(t * 0.0008 + p.phase));
-
-                ctx.beginPath();
-                ctx.arc(ex, ey, p.size, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(' + p.r + ',' + p.g + ',' + p.b + ',' + p.opacity.toFixed(3) + ')';
-                ctx.fill();
-            }
-
-            requestAnimationFrame(draw);
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-        initParticles();
-        requestAnimationFrame(draw);
-    })();
-
-
-    /* ════════════════════════════════════════════════════
-       Save Memory Timer
-    ════════════════════════════════════════════════════ */
-    (function () {
-        var bar     = document.getElementById('save-memory-bar');
-        var timerEl = document.getElementById('memory-timer');
-        var dismiss = document.getElementById('dismiss-memory');
-        var seconds = 3;
-
-        var interval = setInterval(function () {
-            seconds++;
-            var m = String(Math.floor(seconds / 60)).padStart(2, '0');
-            var s = String(seconds % 60).padStart(2, '0');
-            timerEl.textContent = m + ':' + s;
-        }, 1000);
-
-        dismiss.addEventListener('click', function () {
-            bar.style.display = 'none';
-            clearInterval(interval);
-        });
-    })();
-
-
-    /* ════════════════════════════════════════════════════
-       Mobile Nav + Greeting
-    ════════════════════════════════════════════════════ */
-    document.addEventListener('DOMContentLoaded', function () {
-        var toggle   = document.querySelector('.menu-toggle');
-        var navLinks = document.querySelector('.nav-links');
-
-        if (toggle) {
-            toggle.addEventListener('click', function () {
-                navLinks.classList.toggle('active');
-            });
-        }
-
-        document.querySelectorAll('.nav-links a').forEach(function (a) {
-            a.addEventListener('click', function () {
-                if (window.innerWidth <= 768) navLinks.classList.remove('active');
-            });
-        });
-
+        var toggle = document.querySelector('.menu-toggle');
+        var nav    = document.getElementById('nav-links');
+        if (!toggle) return;
+        toggle.addEventListener('click', function () { nav.classList.toggle('open'); });
         document.addEventListener('click', function (e) {
-            if (window.innerWidth <= 768
-                && !e.target.closest('.nav-links')
-                && !e.target.closest('.menu-toggle')
-                && navLinks.classList.contains('active')) {
-                navLinks.classList.remove('active');
+            if (!e.target.closest('header')) nav.classList.remove('open');
+        });
+    })();
+
+
+    /* ══════════════════════════════════════════════════════
+       Particle Image Engine
+       ─────────────────────────────────────────────────────
+       Loads the image onto a canvas as a grid of BLOCK×BLOCK
+       colour samples.  On mousemove, blocks within RADIUS of
+       the cursor fly outward; on mouseleave they spring back.
+    ══════════════════════════════════════════════════════ */
+    (function () {
+        var BLOCK   = 5;    // px — size of each sampled tile
+        var RADIUS  = 80;   // px — cursor influence radius
+        var SPRING  = 0.14; // return spring stiffness
+        var DAMPING = 0.72; // velocity damping (0-1)
+        var LAUNCH  = 9;    // max launch speed multiplier
+
+        var canvas   = document.getElementById('img-canvas');
+        var ctx      = canvas.getContext('2d');
+        var cardWrap = document.getElementById('card-wrap');
+        var hint     = document.getElementById('hover-hint');
+        var hintShown = false;
+
+        var blocks   = [];
+        var mouseX   = -9999;
+        var mouseY   = -9999;
+        var hovering = false;
+        var rafId    = null;
+        var imgW = 0, imgH = 0;
+
+        /* ── Load image, sample into blocks ──────────────── */
+        var img = new Image();
+        img.onload = function () {
+            imgW = img.naturalWidth;
+            imgH = img.naturalHeight;
+
+            // Internal canvas resolution = image native size
+            canvas.width  = imgW;
+            canvas.height = imgH;
+
+            // Draw image once to read pixel data
+            ctx.drawImage(img, 0, 0);
+            var pxData = ctx.getImageData(0, 0, imgW, imgH).data;
+
+            blocks = [];
+            for (var cy = 0; cy < imgH; cy += BLOCK) {
+                for (var cx = 0; cx < imgW; cx += BLOCK) {
+                    // Sample centre pixel of this block
+                    var sx  = Math.min(cx + Math.floor(BLOCK / 2), imgW - 1);
+                    var sy  = Math.min(cy + Math.floor(BLOCK / 2), imgH - 1);
+                    var idx = (sy * imgW + sx) * 4;
+                    var r   = pxData[idx];
+                    var g   = pxData[idx + 1];
+                    var b   = pxData[idx + 2];
+                    var a   = pxData[idx + 3];
+                    if (a < 8) continue; // skip fully transparent
+
+                    blocks.push({
+                        hx: cx, hy: cy,   // home position
+                        x:  cx, y:  cy,   // current position
+                        vx: 0,  vy: 0,    // velocity
+                        color: 'rgb(' + r + ',' + g + ',' + b + ')',
+                        alpha: 1,
+                        launched: false
+                    });
+                }
             }
+
+            rafId = requestAnimationFrame(tick);
+        };
+        img.src = 'public/images/avatar.jpg';
+
+        /* ── Animation loop ───────────────────────────────── */
+        function tick() {
+            ctx.clearRect(0, 0, imgW, imgH);
+
+            for (var i = 0; i < blocks.length; i++) {
+                var bl = blocks[i];
+                var dx = bl.hx + BLOCK * 0.5 - mouseX;
+                var dy = bl.hy + BLOCK * 0.5 - mouseY;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (hovering && dist < RADIUS) {
+                    // ── Launch away from cursor ────────────
+                    if (!bl.launched) {
+                        var influence = 1 - dist / RADIUS;
+                        var angle = Math.atan2(-dy, -dx) + (Math.random() - 0.5) * 1.2;
+                        var speed = influence * LAUNCH + Math.random() * 3;
+                        bl.vx = Math.cos(angle) * speed;
+                        bl.vy = Math.sin(angle) * speed;
+                        bl.launched = true;
+                    }
+                    bl.x += bl.vx;
+                    bl.y += bl.vy;
+                    bl.vx *= 0.93;
+                    bl.vy *= 0.93;
+
+                    // Fade as it travels away from home
+                    var gone = Math.sqrt(
+                        (bl.x - bl.hx) * (bl.x - bl.hx) +
+                        (bl.y - bl.hy) * (bl.y - bl.hy)
+                    );
+                    bl.alpha = Math.max(0, 1 - gone / 110);
+                } else {
+                    // ── Spring back home ───────────────────
+                    bl.launched = false;
+                    bl.vx = (bl.vx + (bl.hx - bl.x) * SPRING) * DAMPING;
+                    bl.vy = (bl.vy + (bl.hy - bl.y) * SPRING) * DAMPING;
+                    bl.x += bl.vx;
+                    bl.y += bl.vy;
+                    // Fade back in as it nears home
+                    var nearHome = Math.sqrt(
+                        (bl.x - bl.hx) * (bl.x - bl.hx) +
+                        (bl.y - bl.hy) * (bl.y - bl.hy)
+                    );
+                    bl.alpha = Math.min(1, bl.alpha + 0.06);
+                    if (nearHome > 80) bl.alpha = Math.min(bl.alpha, 1 - nearHome / 130);
+                }
+
+                ctx.globalAlpha = bl.alpha;
+                ctx.fillStyle   = bl.color;
+                ctx.fillRect(bl.x, bl.y, BLOCK, BLOCK);
+            }
+
+            ctx.globalAlpha = 1;
+            rafId = requestAnimationFrame(tick);
+        }
+
+        /* ── Mouse → canvas coordinate transform ─────────── */
+        function toCanvasCoords(clientX, clientY) {
+            var rect  = canvas.getBoundingClientRect();
+            // scale from CSS display size to internal canvas resolution
+            var scaleX = imgW / rect.width;
+            var scaleY = imgH / rect.height;
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top)  * scaleY
+            };
+        }
+
+        /* ── 3-D tilt ─────────────────────────────────────── */
+        cardWrap.addEventListener('mousemove', function (e) {
+            hovering = true;
+
+            // Hide hint after first interaction
+            if (!hintShown) {
+                hintShown = true;
+                hint.classList.add('hidden');
+            }
+
+            // 3-D rotation
+            var rect = cardWrap.getBoundingClientRect();
+            var nx = (e.clientX - rect.left  - rect.width  / 2) / (rect.width  / 2); // -1..1
+            var ny = (e.clientY - rect.top   - rect.height / 2) / (rect.height / 2); // -1..1
+            var rotY =  nx * 18;   // max ±18°
+            var rotX = -ny * 18;
+            cardWrap.style.transform =
+                'perspective(700px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale3d(1.04,1.04,1.04)';
+
+            // Particle mouse position (in canvas pixel space)
+            var pos = toCanvasCoords(e.clientX, e.clientY);
+            mouseX = pos.x;
+            mouseY = pos.y;
         });
 
-        if (typeof TimeUtility !== 'undefined') {
-            var el = document.getElementById('time-greeting');
-            if (el) {
-                el.textContent = TimeUtility.getGreeting();
-                setInterval(function () { el.textContent = TimeUtility.getGreeting(); }, 60000);
-            }
-        }
-    });
+        cardWrap.addEventListener('mouseleave', function () {
+            hovering = false;
+            mouseX   = -9999;
+            mouseY   = -9999;
+            cardWrap.style.transform =
+                'perspective(700px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
+        });
+
+        /* Touch: disable 3D on touch devices to avoid stickiness */
+        cardWrap.addEventListener('touchstart', function () {
+            cardWrap.style.cursor = 'default';
+        }, { passive: true });
+    })();
     </script>
 </body>
 </html>
