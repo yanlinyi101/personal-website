@@ -488,13 +488,18 @@
         return;
       }
       var p = paths[idx];
+      // Double rAF + reflow ensures the browser paints dashoffset=len
+      // before we start the transition, so it actually animates
       requestAnimationFrame(function () {
-        p.style.transition = 'stroke-dashoffset 6.5s ease-in-out';
-        p.style.strokeDashoffset = '0';
-        p.addEventListener('transitionend', function handler(e) {
-          if (e.propertyName !== 'stroke-dashoffset') return;
-          p.removeEventListener('transitionend', handler);
-          animateChar(idx + 1);
+        void p.getBoundingClientRect(); // force reflow
+        requestAnimationFrame(function () {
+          p.style.transition = 'stroke-dashoffset 6.5s ease-in-out';
+          p.style.strokeDashoffset = '0';
+          p.addEventListener('transitionend', function handler(e) {
+            if (e.propertyName !== 'stroke-dashoffset') return;
+            p.removeEventListener('transitionend', handler);
+            animateChar(idx + 1);
+          });
         });
       });
     }
