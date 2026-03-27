@@ -45,7 +45,19 @@
       display: flex; align-items: center;
       justify-content: space-between; height: 3.6rem;
     }
-    .logo { font-weight: 700; font-size: 1rem; color: var(--ink); text-decoration: none; }
+    @font-face {
+      font-family: 'PFShaohua';
+      src: url('fonts/pingfang-shaohua.ttf') format('truetype');
+      font-display: swap;
+    }
+    .logo { font-weight: 700; font-size: 1rem; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; }
+    .logo-cn {
+      font-family: 'PFShaohua', 'Source Han Sans SC', sans-serif;
+      font-weight: normal;
+      font-size: 1.15rem;
+      letter-spacing: .05em;
+    }
+    #logo-anim { display: inline-flex; align-items: center; gap: 1px; }
     .nav-links { display: flex; gap: 1.8rem; list-style: none; }
     .nav-links a {
       text-decoration: none; color: var(--ink2);
@@ -172,13 +184,21 @@
     .foot-links a:hover { color: var(--acc); }
     .copy { margin-top: 1.4rem; text-align: center; font-size: .7rem; color: var(--ink2); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 </head>
 <body>
 
   <header>
     <div class="wrap">
       <nav>
-        <a href="index.html" class="logo">Yan Linyi</a>
+        <a href="index.html" class="logo" id="logo-link">
+          <div id="logo-anim" style="display:none">
+            <div id="hw-yan"></div>
+            <div id="hw-lin"></div>
+            <div id="hw-yi"></div>
+          </div>
+          <span id="logo-text" class="logo-cn" style="display:none">颜麟懿</span>
+        </a>
         <button class="menu-btn" aria-label="菜单">☰</button>
         <ul class="nav-links" id="nav-links">
           <li><a href="index.html" class="active">首页</a></li>
@@ -427,6 +447,53 @@
       over = false; mx = -9999; my = -9999;
       card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)';
     });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var DONE_KEY = 'signatureDone';
+    var CHARS = [
+      { id: 'hw-yan', char: '颜' },
+      { id: 'hw-lin', char: '麟' },
+      { id: 'hw-yi',  char: '懿' }
+    ];
+    var SIZE = 32;
+
+    function showStatic() {
+      document.getElementById('logo-anim').style.display = 'none';
+      document.getElementById('logo-text').style.display = '';
+    }
+
+    if (localStorage.getItem(DONE_KEY)) {
+      showStatic();
+      return;
+    }
+
+    setTimeout(function () {
+      document.getElementById('logo-anim').style.display = 'inline-flex';
+
+      var writers = CHARS.map(function (c) {
+        return HanziWriter.create(c.id, c.char, {
+          width: SIZE, height: SIZE, padding: 2,
+          showOutline: false,
+          showCharacter: false,
+          strokeColor: '#3a2010',
+          strokeAnimationSpeed: 1.2,
+          delayBetweenStrokes: 80,
+        });
+      });
+
+      function animateNext(idx) {
+        if (idx >= writers.length) {
+          showStatic();
+          localStorage.setItem(DONE_KEY, '1');
+          return;
+        }
+        writers[idx].animateCharacter({ onComplete: function () { animateNext(idx + 1); } });
+      }
+      animateNext(0);
+    }, 3000);
   })();
   </script>
 
