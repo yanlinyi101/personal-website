@@ -467,7 +467,7 @@
 
   <script>
   (function () {
-    var DONE_KEY   = 'sigDoneV3';
+    var DONE_KEY   = 'sigDoneV4';
     var STROKE_GAP = 300;
     var INIT_DELAY = 3000;
 
@@ -503,15 +503,43 @@ var CHAR_TRANSFORMS = [
 
     if (localStorage.getItem(DONE_KEY)) { showAll(); return; }
 
+    function computeStrokeBbox(pathStr, ci) {
+      var PAD = 25;
+      var nums = pathStr.match(/[-+]?[0-9]*\.?[0-9]+(?:\.[0-9]+)?/g) || [];
+      var xs = [], ys = [];
+      for (var i = 0; i + 1 < nums.length; i += 2) {
+        xs.push(parseFloat(nums[i]));
+        ys.push(parseFloat(nums[i + 1]));
+      }
+      if (xs.length === 0) return [0, 0, 50, 941];
+      var xmin = Math.min.apply(null, xs), xmax = Math.max.apply(null, xs);
+      var ymin = Math.min.apply(null, ys), ymax = Math.max.apply(null, ys);
+      var m = CHAR_TRANSFORMS[ci].match(
+        /translate\(\s*([\-\d.]+)\s*,\s*([\-\d.]+)\s*\)\s*scale\(\s*([\-\d.]+)\s*,\s*([\-\d.]+)\s*\)/
+      );
+      var tx = parseFloat(m[1]), ty = parseFloat(m[2]);
+      var sx = parseFloat(m[3]), sy = parseFloat(m[4]);
+      var x1 = xmin * sx + tx, x2 = xmax * sx + tx;
+      var y1 = ymin * sy + ty, y2 = ymax * sy + ty;
+      var rx = Math.max(0, Math.min(x1, x2) - PAD);
+      var ry = Math.max(0, Math.min(y1, y2) - PAD);
+      var rw = Math.min(2985, Math.max(x1, x2) + PAD) - rx;
+      var rh = Math.min(941,  Math.max(y1, y2) + PAD) - ry;
+      return [rx, ry, rw, rh];
+    }
+
     function revealStroke(n) {
       if (n >= STROKES.length) { localStorage.setItem(DONE_KEY, '1'); return; }
       var ns = 'http://www.w3.org/2000/svg';
       var ci = STROKES[n][0];
       var master = document.getElementById('master-' + ci);
-      var path = document.createElementNS(ns, 'path');
-      path.setAttribute('transform', CHAR_TRANSFORMS[ci]);
-      path.setAttribute('d', STROKES[n][1]);
-      master.appendChild(path);
+      var bbox = computeStrokeBbox(STROKES[n][1], ci);
+      var rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x',      bbox[0]);
+      rect.setAttribute('y',      bbox[1]);
+      rect.setAttribute('width',  bbox[2]);
+      rect.setAttribute('height', bbox[3]);
+      master.appendChild(rect);
       setTimeout(function() { revealStroke(n + 1); }, STROKE_GAP);
     }
 
