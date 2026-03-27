@@ -470,38 +470,43 @@
       return;
     }
 
-    // Hide paths until animation starts
-    paths.forEach(function (p) {
+    // Pre-measure all path lengths and hide them
+    var lens = paths.map(function (p) {
       var len = p.getTotalLength();
       p.style.strokeDasharray = len;
       p.style.strokeDashoffset = len;
+      return len;
     });
+
+    // JS rAF loop — directly drives strokeDashoffset each frame,
+    // bypassing CSS transition quirks in Chrome SVG
+    var DUR = 6500; // ms per character
+
+    function easeInOut(t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
 
     function animateChar(idx) {
       if (idx >= paths.length) {
-        // All drawn — transition to filled
-        paths.forEach(function (p) {
-          p.style.transition = 'fill 0.25s, stroke 0.25s';
-          p.classList.add('done');
-        });
+        showDone();
         localStorage.setItem(DONE_KEY, '1');
         return;
       }
       var p = paths[idx];
-      // Double rAF + reflow ensures the browser paints dashoffset=len
-      // before we start the transition, so it actually animates
-      requestAnimationFrame(function () {
-        void p.getBoundingClientRect(); // force reflow
-        requestAnimationFrame(function () {
-          p.style.transition = 'stroke-dashoffset 6.5s ease-in-out';
+      var len = lens[idx];
+      var start = null;
+      function step(ts) {
+        if (!start) start = ts;
+        var t = Math.min((ts - start) / DUR, 1);
+        p.style.strokeDashoffset = len * (1 - easeInOut(t));
+        if (t < 1) {
+          requestAnimationFrame(step);
+        } else {
           p.style.strokeDashoffset = '0';
-          p.addEventListener('transitionend', function handler(e) {
-            if (e.propertyName !== 'stroke-dashoffset') return;
-            p.removeEventListener('transitionend', handler);
-            animateChar(idx + 1);
-          });
-        });
-      });
+          animateChar(idx + 1);
+        }
+      }
+      requestAnimationFrame(step);
     }
 
     setTimeout(function () { animateChar(0); }, 3000);
