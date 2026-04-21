@@ -398,6 +398,16 @@
         .dark-mode .copyright {
             color: #AAA;
         }
+
+        .card {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -594,5 +604,16 @@
     <!-- 引入时间工具类和主题切换器 -->
     <script src="js/time-utility.js"></script>
     <script src="js/theme-switcher.js"></script>
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.card').forEach(el => observer.observe(el));
+    </script>
 </body>
 </html> 
