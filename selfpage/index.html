@@ -441,7 +441,7 @@
     }
     .art-date { font-size: .65rem; color: var(--ink2); margin-top: auto; }
 
-    /* ── §5 contact ──────────────────────────── */
+    /* ── §6 contact ──────────────────────────── */
     .snap-contact {
       flex-direction: column;
       position: relative;
@@ -470,6 +470,42 @@
       font-size: .86rem;
       font-weight: 600;
       color: var(--ink);
+    }
+    /* QR card */
+    .qr-card { padding-bottom: .7rem; overflow: hidden; }
+    .qr-wrap {
+      position: relative;
+      width: 160px;
+      height: 152px;   /* QR region is ~778×740px → scale 160/778 → height 740*0.2056=152px */
+      overflow: hidden;
+      border-radius: .45rem;
+      background: #fff;
+      margin-top: .55rem;
+    }
+    .qr-img {
+      position: absolute;
+      width: 183px;
+      left: 50%;
+      transform: translateX(-50%);
+      top: -54px;
+    }
+    /* White mask covers any bottom-text bleed without clipping QR finder patterns */
+    .qr-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 8px;
+      background: #fff;
+      pointer-events: none;
+    }
+    /* Same for top — hide any header bleed */
+    .qr-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: #fff;
+      pointer-events: none;
     }
     .sec-foot {
       position: absolute;
@@ -778,9 +814,11 @@
             <p class="cc-label">Email</p>
             <p class="cc-val">yanlinyi101@gmail.com</p>
           </div>
-          <div class="contact-card">
+          <div class="contact-card qr-card">
             <p class="cc-label">WeChat</p>
-            <p class="cc-val">扫码添加微信</p>
+            <div class="qr-wrap">
+              <img class="qr-img" src="public/images/wechat-qr.jpg" alt="微信二维码" draggable="false">
+            </div>
           </div>
         </div>
         <a href="contact.html" class="sec-link">查看联系方式 →</a>
