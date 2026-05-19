@@ -24,7 +24,7 @@
   }, { passive: true });
 
   /* ── Magnetic Tilt ──────────────────────────────── */
-  document.querySelectorAll('.card').forEach(function (card) {
+  document.querySelectorAll('.card:not(#card)').forEach(function (card) {
     card.addEventListener('mouseenter', function () {
       // Remove transform from transition so tilt is instant
       card.style.transition = 'opacity 0.5s ease, box-shadow 0.15s ease';

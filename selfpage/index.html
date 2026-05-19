@@ -14,21 +14,35 @@
     }
 
     html, body {
-      min-height: 100vh;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Inter', 'Source Han Sans SC', -apple-system, sans-serif;
-      /*
-       * Three-layer background built from the image's own edge colours:
-       *   layer 1 — dusty-rose halo on the left  (matches image left edge ~#c09098)
-       *   layer 2 — warm-gold halo on the right  (matches image right edge ~#d4b070)
-       *   layer 3 — base warm-peach radial        (matches image centre)
-       * Together they eliminate the visible seam when the canvas mask fades out.
-       */
       background:
         radial-gradient(ellipse 72% 85% at  6% 50%, rgba(178,118,128,.40) 0%, transparent 56%),
         radial-gradient(ellipse 55% 70% at 96% 54%, rgba(200,148, 80,.28) 0%, transparent 52%),
         radial-gradient(ellipse 140% 130% at 50% 36%, #fde4cc 0%, #f0c4a0 44%, #e5a87c 100%);
       color: var(--ink);
-      overflow-x: hidden;
+    }
+
+    /* ── scroll root ─────────────────────────── */
+    #scroll-root {
+      height: 100%;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    #scroll-root::-webkit-scrollbar { display: none; }
+
+    /* ── snap sections ───────────────────────── */
+    .snap {
+      min-height: 100svh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 1rem 1.5rem;
     }
 
     /* ── nav ─────────────────────────────────── */
@@ -75,18 +89,59 @@
       .nav-links.open { transform: translateY(0); }
     }
 
-    /* ── hero ────────────────────────────────── */
-    .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 4rem 1rem 2rem; gap: 1rem;
+    /* ── side nav ────────────────────────────── */
+    .side-nav {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+    @media (max-width: 768px) { .side-nav { display: none; } }
+    .sn-item {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .sn-label {
+      font-size: .58rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--ink2);
+      opacity: 0;
+      transform: translateX(6px);
+      transition: opacity .2s, transform .2s;
+    }
+    .sn-item:hover .sn-label,
+    .sn-item.active .sn-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .sn-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(58,32,16,.25);
+      transition: background .25s, transform .25s;
+      flex-shrink: 0;
+    }
+    .sn-item.active .sn-dot {
+      background: var(--acc);
+      transform: scale(1.5);
     }
 
-    /*
-     * Wide card — 16:9, no border-radius, no clip.
-     * 3-D tilt applied here.
-     */
+    /* ── hero ────────────────────────────────── */
+    .snap-hero {
+      flex-direction: column;
+      gap: 1rem;
+      padding: 4rem 1rem 2rem;
+    }
     .card {
       position: relative;
       width: min(640px, 82vw);
@@ -96,19 +151,6 @@
       cursor: crosshair;
       will-change: transform;
     }
-
-    /*
-     * Canvas fills the card.
-     * mask-image creates a four-edge vignette:
-     *   — fully opaque centre
-     *   — fades to transparent toward each edge
-     * Transparent pixels reveal the body background, which is
-     * colour-matched to the image edges → no visible seam.
-     *
-     * Fade zones: 20 % left/right, 14 % top/bottom.
-     * Wider zones = more gradual dissolve = any residual colour
-     * difference blends away over a longer distance.
-     */
     #cvs {
       display: block;
       width: 100%; height: 100%;
@@ -121,8 +163,6 @@
         linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%);
       mask-composite: intersect;
     }
-
-    /* ── text & buttons ──────────────────────── */
     .hero-text { text-align: center; }
     h1 {
       font-size: clamp(1.6rem, 4vw, 2.4rem);
@@ -140,7 +180,7 @@
     }
     @keyframes blink {
       0%, 100% { opacity: 1; }
-      50%      { opacity: 0; }
+      50%       { opacity: 0; }
     }
     .quote-emphasis {
       margin-top: .4rem;
@@ -192,7 +232,6 @@
       transition: opacity .8s;
     }
     .hint.gone { opacity: 0; }
-
     .btns { display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center; }
     .btn {
       display: inline-flex; align-items: center; gap: .38rem;
@@ -212,22 +251,240 @@
     }
     .btn-out:hover { border-color: var(--acc); transform: translateY(-1px); }
 
-    /* ── footer ──────────────────────────────── */
-    footer {
-      border-top: 1px solid rgba(192,112,64,.12);
-      padding: 2.2rem 0; background: rgba(234,170,128,.08);
+    /* ── section commons ─────────────────────── */
+    .sec-inner {
+      max-width: 680px;
+      width: 100%;
+      padding: 1.5rem;
     }
-    .foot-row {
-      display: flex; flex-wrap: wrap; gap: 1rem;
-      align-items: center; justify-content: space-between;
+    .sec-inner--wide { max-width: 960px; }
+    .sec-kicker {
+      font-size: .6rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--acc);
+      margin-bottom: .55rem;
+      font-weight: 600;
     }
-    .foot-links { display: flex; gap: 1.2rem; flex-wrap: wrap; }
-    .foot-links a {
-      color: var(--ink2); text-decoration: none;
-      font-size: .78rem; transition: color .15s;
+    .sec-h {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.18;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin-bottom: 1rem;
     }
-    .foot-links a:hover { color: var(--acc); }
-    .copy { margin-top: 1.4rem; text-align: center; font-size: .7rem; color: var(--ink2); }
+    .sec-h em { font-style: normal; color: var(--acc); }
+    .sec-body {
+      font-size: .88rem;
+      line-height: 1.85;
+      color: var(--ink2);
+      max-width: 54ch;
+    }
+    .sec-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      color: var(--acc);
+      text-decoration: none;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      border-bottom: 1px solid transparent;
+      transition: border-color .15s;
+      margin-top: 1.3rem;
+    }
+    .sec-link:hover { border-color: var(--acc); }
+
+    /* ── §2 about ────────────────────────────── */
+    .career-tags {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .career-tag {
+      padding: .28rem .75rem;
+      border-radius: 99px;
+      background: rgba(192,112,64,.10);
+      color: var(--acc);
+      font-size: .7rem;
+      font-weight: 500;
+    }
+
+    /* ── §3 skills ───────────────────────────── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: .85rem;
+      margin-top: 1.2rem;
+    }
+    .skill-card {
+      padding: 1rem 1.2rem;
+      border-radius: .7rem;
+      background: rgba(253,228,204,.55);
+      border: 1px solid rgba(192,112,64,.13);
+      cursor: default;
+    }
+    .skill-card h3 {
+      font-size: .83rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: .3rem;
+    }
+    .skill-card p {
+      font-size: .72rem;
+      line-height: 1.6;
+      color: var(--ink2);
+    }
+    .skill-icon { font-size: 1.15rem; margin-bottom: .4rem; }
+    @media (max-width: 640px) {
+      .skills-grid { grid-template-columns: repeat(2, 1fr); gap: .6rem; }
+      .skill-card { padding: .7rem .85rem; }
+      .skill-card h3 { font-size: .76rem; }
+      .skill-card p { font-size: .66rem; line-height: 1.5; }
+      .skill-icon { font-size: 1rem; margin-bottom: .25rem; }
+    }
+
+    /* ── §4 projects ─────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: .85rem;
+      margin-top: 1.2rem;
+    }
+    .proj-card {
+      padding: 1.1rem 1.3rem;
+      border-radius: .7rem;
+      background: rgba(253,228,204,.55);
+      border: 1px solid rgba(192,112,64,.13);
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+    .proj-card h3 {
+      font-size: .83rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .proj-card p {
+      font-size: .72rem;
+      line-height: 1.6;
+      color: var(--ink2);
+      flex: 1;
+    }
+    .proj-tags {
+      display: flex;
+      gap: .35rem;
+      flex-wrap: wrap;
+      margin-top: .1rem;
+    }
+    .proj-tag {
+      padding: .18rem .55rem;
+      border-radius: 99px;
+      background: rgba(192,112,64,.10);
+      color: var(--acc);
+      font-size: .62rem;
+      font-weight: 500;
+    }
+    .proj-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      margin-top: .5rem;
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--acc);
+      text-decoration: none;
+      letter-spacing: .03em;
+      border-bottom: 1px solid transparent;
+      transition: border-color .15s;
+    }
+    .proj-link:hover { border-color: var(--acc); }
+    @media (max-width: 640px) {
+      .projects-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── §5 writing ──────────────────────────── */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: .85rem;
+      margin-top: 1.2rem;
+    }
+    .art-card {
+      padding: 1.15rem 1.2rem;
+      border-radius: .7rem;
+      background: rgba(253,228,204,.55);
+      border: 1px solid rgba(192,112,64,.13);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      transition: background .2s;
+    }
+    .art-card:hover { background: rgba(253,228,204,.88); }
+    .art-tag {
+      font-size: .57rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--acc);
+      font-weight: 700;
+    }
+    .art-card h3 {
+      font-size: .8rem;
+      line-height: 1.55;
+      font-weight: 600;
+      color: var(--ink);
+      flex: 1;
+    }
+    .art-date { font-size: .65rem; color: var(--ink2); margin-top: auto; }
+
+    /* ── §5 contact ──────────────────────────── */
+    .snap-contact {
+      flex-direction: column;
+      position: relative;
+    }
+    .contact-grid {
+      display: flex;
+      gap: .85rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+    }
+    .contact-card {
+      flex: 1 1 180px;
+      padding: 1.1rem 1.3rem;
+      border-radius: .7rem;
+      background: rgba(253,228,204,.55);
+      border: 1px solid rgba(192,112,64,.13);
+    }
+    .cc-label {
+      font-size: .57rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink2);
+      margin-bottom: .35rem;
+    }
+    .cc-val {
+      font-size: .86rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .sec-foot {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: .85rem 2rem;
+      border-top: 1px solid rgba(192,112,64,.10);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .sec-foot p { font-size: .67rem; color: var(--ink2); }
   </style>
 </head>
 <body>
@@ -272,8 +529,38 @@
     </div>
   </header>
 
-  <main>
-    <section class="hero">
+  <!-- Side nav dots -->
+  <aside class="side-nav" aria-label="页面区块导航">
+    <div class="sn-item active" data-target="sec-hero">
+      <span class="sn-label">首页</span>
+      <span class="sn-dot"></span>
+    </div>
+    <div class="sn-item" data-target="sec-about">
+      <span class="sn-label">关于我</span>
+      <span class="sn-dot"></span>
+    </div>
+    <div class="sn-item" data-target="sec-skills">
+      <span class="sn-label">核心能力</span>
+      <span class="sn-dot"></span>
+    </div>
+    <div class="sn-item" data-target="sec-projects">
+      <span class="sn-label">项目</span>
+      <span class="sn-dot"></span>
+    </div>
+    <div class="sn-item" data-target="sec-writing">
+      <span class="sn-label">近期文章</span>
+      <span class="sn-dot"></span>
+    </div>
+    <div class="sn-item" data-target="sec-contact">
+      <span class="sn-label">联系我</span>
+      <span class="sn-dot"></span>
+    </div>
+  </aside>
+
+  <main id="scroll-root">
+
+    <!-- §1 Hero -->
+    <section class="snap snap-hero" id="sec-hero">
       <div class="card" id="card">
         <canvas id="cvs"></canvas>
       </div>
@@ -305,25 +592,206 @@
         <a href="about.html" class="btn btn-out">了解更多</a>
       </div>
     </section>
-  </main>
 
-  <footer>
-    <div class="wrap">
-      <div class="foot-row">
-        <div>
-          <strong>Yan Linyi的个人主页</strong>
-          <p style="font-size:.76rem;color:var(--ink2);margin-top:.15rem">No Game, No Life</p>
+    <!-- §2 关于我 -->
+    <section class="snap" id="sec-about">
+      <div class="sec-inner">
+        <p class="sec-kicker">Who I Am</p>
+        <h2 class="sec-h">产品思维<br><em>×</em> AI 落地</h2>
+        <p class="sec-body">
+          产品经理出身，AI 应用深度实践者。在滴滴担任 AI 智能客服 BP，负责 chatflow 客服系统的持续优化；现任北京卓美悦康 AI 效率部负责人，专注团队 AI 赋能与内部效率工具开发。
+        </p>
+        <div class="career-tags">
+          <span class="career-tag">北京卓美悦康 · AI 效率部负责人</span>
+          <span class="career-tag">滴滴无限科技 · AI 智能客服 BP</span>
         </div>
-        <div class="foot-links">
-          <a href="mailto:contact@example.com">Email</a>
-          <a href="#">LinkedIn</a>
-          <a href="#">知乎</a>
-          <a href="#">微信</a>
-        </div>
+        <a href="about.html" class="sec-link">查看完整经历 →</a>
       </div>
-      <p class="copy">&copy; 2025 Linyi Yan. All rights reserved.</p>
-    </div>
-  </footer>
+    </section>
+
+    <!-- §3 核心能力 -->
+    <section class="snap" id="sec-skills">
+      <div class="sec-inner sec-inner--wide">
+        <p class="sec-kicker">What I Do</p>
+        <h2 class="sec-h">核心能力</h2>
+        <div class="skills-grid">
+          <div class="skill-card">
+            <div class="skill-icon">🤖</div>
+            <h3>AI 客服系统落地</h3>
+            <p>从需求分析到上线部署，全流程独立负责 chatflow AI 客服解决方案。</p>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🔍</div>
+            <h3>RAG 系统设计</h3>
+            <p>构建知识库检索与生成流水线，提升 AI 客服准确率与一致性。</p>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">⚙️</div>
+            <h3>Harness 工程</h3>
+            <p>精细化提示词设计与测试体系，系统化迭代 AI 输出质量。</p>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🖥️</div>
+            <h3>服务器部署与运维</h3>
+            <p>VPS 租用、Nginx 配置、环境加固，独立上线 AI 应用服务。</p>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">📊</div>
+            <h3>运营看板设计</h3>
+            <p>数据可视化与决策支撑，驱动客服系统持续优化。</p>
+          </div>
+          <div class="skill-card">
+            <div class="skill-icon">🎯</div>
+            <h3>商业策略</h3>
+            <p>产品路线图规划与商业落地，对齐业务目标与技术实现。</p>
+          </div>
+        </div>
+        <a href="playbook.html" class="sec-link">查看方法论 →</a>
+      </div>
+    </section>
+
+    <!-- §4 项目 -->
+    <section class="snap" id="sec-projects">
+      <div class="sec-inner sec-inner--wide">
+        <p class="sec-kicker">Open Source</p>
+        <h2 class="sec-h">开源项目</h2>
+        <div class="projects-grid">
+          <div class="proj-card">
+            <h3>微信小程序 AI 智能客服</h3>
+            <p>基于腾讯云部署的微信小程序 AI 客服 Webhook，支持 DeepSeek 自动回复、RAG 知识库检索、一键转人工、实时管理后台，聊天记录本地持久化。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">AI客服</span>
+              <span class="proj-tag">RAG</span>
+              <span class="proj-tag">微信小程序</span>
+              <span class="proj-tag">腾讯云</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/wx-ai-customer-service" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+          <div class="proj-card">
+            <h3>极低成本 AI 客服 Webhook</h3>
+            <p>基于腾讯云函数 SCF 的微信小程序 AI 客服方案，支持 RAG 知识库、多轮对话、转人工，月运营费用约 ¥0，适合个人与小团队快速部署。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">Serverless</span>
+              <span class="proj-tag">RAG</span>
+              <span class="proj-tag">低成本</span>
+              <span class="proj-tag">云函数SCF</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/lowcost-AI-customer-service-webhook" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+          <div class="proj-card">
+            <h3>微信 AI 客服知识库更新工具</h3>
+            <p>将 Markdown 文档自动解析为 knowledge_base.json 并一键部署至服务器，简化 AI 客服知识库的维护与迭代流程。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">知识库</span>
+              <span class="proj-tag">自动化</span>
+              <span class="proj-tag">Markdown</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/wechat-kb-updater" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+          <div class="proj-card">
+            <h3>InviteHub 邀请码管理系统</h3>
+            <p>邀请码共享与管理系统，支持领取锁定机制，防止重复领取与资源浪费，适用于内测资格分发、活动码管理等场景。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">工具</span>
+              <span class="proj-tag">管理系统</span>
+              <span class="proj-tag">开源</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/invitehub----" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+          <div class="proj-card">
+            <h3>视频脚本逆向工程工具</h3>
+            <p>顶尖视频脚本策略师 Prompt 工具，通过"逆向工程"拆解爆款视频结构，复刻高转化率脚本策略，适用于内容创作者与运营团队。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">Prompt工程</span>
+              <span class="proj-tag">内容创作</span>
+              <span class="proj-tag">AI工具</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/Video-Script-Reverse-Engineering-Pro" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+          <div class="proj-card">
+            <h3>每日日记 Claude Skill</h3>
+            <p>Claude Code Skill，通过交互式引导与 AI 辅助生成结构化每日日记，支持自定义提示与内容生成。</p>
+            <div class="proj-tags">
+              <span class="proj-tag">Claude Code</span>
+              <span class="proj-tag">Skill</span>
+              <span class="proj-tag">生产力</span>
+            </div>
+            <a class="proj-link" href="https://github.com/yanlinyi101/dairy_journal" target="_blank" rel="noopener">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              查看源码
+            </a>
+          </div>
+        </div>
+        <a href="about.html#projects" class="sec-link">查看全部项目 →</a>
+      </div>
+    </section>
+
+    <!-- §5 近期文章 -->
+    <section class="snap" id="sec-writing">
+      <div class="sec-inner sec-inner--wide">
+        <p class="sec-kicker">Recent Writing</p>
+        <h2 class="sec-h">近期文章</h2>
+        <div class="articles-grid">
+          <a class="art-card" href="https://www.woshipm.com/ai/6370157.html" target="_blank" rel="noopener">
+            <span class="art-tag">AI Agent</span>
+            <h3>意外开源的51万行代码，让我们看清了AI Agent的终极秘密</h3>
+            <span class="art-date">2026-04-03</span>
+          </a>
+          <a class="art-card" href="https://www.woshipm.com/ai/6359484.html" target="_blank" rel="noopener">
+            <span class="art-tag">产品经理</span>
+            <h3>QClaw：一个不懂代码的99后，和她抓住的那个时代窗口</h3>
+            <span class="art-date">2026-03-20</span>
+          </a>
+          <a class="art-card" href="https://www.woshipm.com/ai/6357304.html" target="_blank" rel="noopener">
+            <span class="art-tag">AI Agent</span>
+            <h3>产品经理都在追 OpenClaw：它 31 万 Star 的秘密，只有 4 个工具</h3>
+            <span class="art-date">2026-03-17</span>
+          </a>
+        </div>
+        <a href="writing.html" class="sec-link">查看全部文章 →</a>
+      </div>
+    </section>
+
+    <!-- §5 联系我 -->
+    <section class="snap snap-contact" id="sec-contact">
+      <div class="sec-inner">
+        <p class="sec-kicker">Get In Touch</p>
+        <h2 class="sec-h">有趣的事，<br><em>一起做。</em></h2>
+        <p class="sec-body">无论是 AI 应用落地、产品合作，还是只是想聊聊，欢迎随时联系。</p>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <p class="cc-label">Email</p>
+            <p class="cc-val">yanlinyi101@gmail.com</p>
+          </div>
+          <div class="contact-card">
+            <p class="cc-label">WeChat</p>
+            <p class="cc-val">扫码添加微信</p>
+          </div>
+        </div>
+        <a href="contact.html" class="sec-link">查看联系方式 →</a>
+      </div>
+      <div class="sec-foot">
+        <p>No Game, No Life</p>
+        <p>&copy; 2025 Linyi Yan. All rights reserved.</p>
+      </div>
+    </section>
+
+  </main>
 
   <script src="js/time-utility.js"></script>
   <script src="js/theme-switcher.js"></script>
@@ -338,6 +806,33 @@
     document.addEventListener('click', function (e) {
       if (!e.target.closest('header')) nav.classList.remove('open');
     });
+  })();
+
+  /* ── side nav ────────────────────────────── */
+  (function () {
+    var root = document.getElementById('scroll-root');
+    var sections = document.querySelectorAll('.snap');
+    var items = document.querySelectorAll('.sn-item');
+
+    items.forEach(function (item) {
+      item.addEventListener('click', function () {
+        var target = document.getElementById(item.dataset.target);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          items.forEach(function (item) {
+            item.classList.toggle('active', item.dataset.target === id);
+          });
+        }
+      });
+    }, { root: root, threshold: 0.5 });
+
+    sections.forEach(function (s) { obs.observe(s); });
   })();
 
   /* ── English source typewriter ────────────── */
@@ -424,32 +919,16 @@
 
   /* ════════════════════════════════════════════════════════
      PARTICLE ENGINE  — video-inspired organic dust
-     ════════════════════════════════════════════════════════
-     Rendering strategy
-     ───────────────────
-     • offscreen canvas holds the full-resolution image — drawn once
-     • each frame: copy offscreen → visible canvas (sharp, no pixelation)
-     • active tiles: erase home pixel via destination-out composite,
-       then draw a small glowing dot at the drifting position
-     • this way the base image is always crisp; only "departed" pixels
-       become small floating particles
-
-     Motion (video-style)
-     ─────────────────────
-     • slow initial speed (dusty, not explosive)
-     • sinusoidal lateral wander — organic float
-     • slight upward bias — lighter-than-air feel
-     • damped spring return on mouse-leave
   ════════════════════════════════════════════════════════ */
   (function () {
-    var STEP   = 4;    // sample grid spacing (px) — fewer tiles, same image sharpness
-    var DOT    = 2;    // particle dot radius (px)
-    var RADIUS = 88;   // cursor influence radius (canvas px)
-    var MAX_D  = 115;  // distance → fully faded
-    var SPEED  = 1.0;  // max launch speed (canvas px/frame)
+    var STEP   = 4;
+    var DOT    = 2;
+    var RADIUS = 88;
+    var MAX_D  = 115;
+    var SPEED  = 1.0;
     var SPRING = 0.11;
     var DAMP   = 0.72;
-    var GLOW   = 6;    // shadowBlur for each dot
+    var GLOW   = 6;
 
     var cvs    = document.getElementById('cvs');
     var ctx    = cvs.getContext('2d');
@@ -465,7 +944,6 @@
     var over   = false;
     var hinted = false;
 
-    /* ── load & sample ──────────────────────── */
     var img = new Image();
     img.onload = function () {
       imgW = img.naturalWidth;
@@ -499,15 +977,12 @@
     };
     img.src = 'public/images/avatar.jpg';
 
-    /* ── render loop ────────────────────────── */
     function loop() {
-      /* 1. Sharp full image */
       ctx.globalCompositeOperation = 'source-over';
       ctx.globalAlpha = 1;
       ctx.shadowBlur  = 0;
       ctx.drawImage(offscr, 0, 0);
 
-      /* 2. Erase home pixels of active tiles (punch holes) */
       ctx.globalCompositeOperation = 'destination-out';
       ctx.fillStyle = '#000';
       for (var i = 0; i < tiles.length; i++) {
@@ -520,12 +995,10 @@
         ctx.fillRect(t.hx, t.hy, STEP, STEP);
       }
 
-      /* 3. Draw glowing particle dots */
       ctx.globalCompositeOperation = 'source-over';
       for (var i = 0; i < tiles.length; i++) {
         var t = tiles[i];
 
-        /* physics */
         var dx   = t.hx + STEP * 0.5 - mx;
         var dy   = t.hy + STEP * 0.5 - my;
         var dist = Math.sqrt(dx * dx + dy * dy);
@@ -571,13 +1044,12 @@
       requestAnimationFrame(loop);
     }
 
-    /* ── coordinate conversion ──────────────── */
     function toCvs(cx, cy) {
       var r = cvs.getBoundingClientRect();
       return { x: (cx - r.left) * (imgW / r.width), y: (cy - r.top) * (imgH / r.height) };
     }
 
-    /* ── 3-D tilt (±14°) — no translation ──── */
+    /* ── 3-D tilt (±14°) — hero card only ──── */
     card.addEventListener('mousemove', function (e) {
       over = true;
       if (!hinted) { hinted = true; hint.classList.add('gone'); }
@@ -599,6 +1071,6 @@
   })();
   </script>
 
-    <script src="js/cursor-effects.js"></script>
+  <script src="js/cursor-effects.js"></script>
 </body>
 </html>
